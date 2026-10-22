@@ -1,0 +1,197 @@
+<title>Mapa de siembra CONAFOR</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/*LEAFLET_CSS*/
+</style>
+<style>
+/* Layout: aplicación de una pantalla, panel de control a la izquierda y mapa a sangre; en teléfono el panel es una hoja inferior. */
+:root {
+  --bg: #f4f5f0; --panel: #fbfbf8; --fg: #1d211b; --muted: #636b5f; --line: #dcdfd4;
+  --accent: #3d6a4c; --accent-soft: #e2ebdf; --suelo: #c8b796; --warn: #9a5b13;
+  --f-ui: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121511; --panel: #181c17; --fg: #e6e9e1; --muted: #9aa294; --line: #2c3229;
+  --accent: #8dbf98; --accent-soft: #23302438; --suelo: #3b342a; --warn: #e3a25a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #121511; --panel: #181c17; --fg: #e6e9e1; --muted: #9aa294; --line: #2c3229;
+  --accent: #8dbf98; --accent-soft: #23302438; --suelo: #3b342a; --warn: #e3a25a; color-scheme: dark; }
+
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-ui); font-size: 14px; overflow: hidden; }
+.app { height: 100%; display: grid; grid-template-columns: minmax(300px, 340px) 1fr; }
+
+.panel { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; min-width: 0;
+  display: flex; flex-direction: column; gap: 22px;
+  padding-block: 20px 28px; padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: 18px; }
+.cab h1 { font-size: 21px; font-weight: 750; font-stretch: 85%; letter-spacing: -0.01em; line-height: 1.15; margin: 0; text-wrap: balance; }
+.cab p { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; }
+.eyebrow { font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 0 0 8px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.eyebrow button { all: unset; cursor: pointer; color: var(--accent); letter-spacing: 0.04em; text-transform: none; font-size: 12px; }
+.eyebrow button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.kpi { padding: 10px 0 9px; display: flex; flex-direction: column; gap: 2px; }
+.kpi + .kpi { padding-left: 12px; border-left: 1px solid var(--line); }
+.kpi b { font-size: 19px; font-weight: 700; font-stretch: 85%; font-variant-numeric: tabular-nums; }
+.kpi span { font-size: 11px; color: var(--muted); }
+.ambito-fila { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+#ambito { font-weight: 650; font-size: 13px; }
+.chip { font-size: 11px; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.chip[data-tipo="sim"] { color: var(--warn); border-color: currentColor; }
+.chip[data-tipo="real"] { color: var(--accent); border-color: currentColor; }
+
+#especies { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.esp { display: grid; grid-template-columns: 18px 14px 1fr auto; align-items: center; column-gap: 8px; padding: 6px 0 9px; cursor: pointer; position: relative; }
+.esp input { margin: 0; accent-color: var(--accent); }
+.esp-nom { font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cursiva { font-style: italic; }
+.esp-n { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.barra { position: absolute; left: 40px; right: 0; bottom: 3px; height: 2px; background: var(--line); }
+.barra::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w); background: var(--c); }
+.esp:has(input:not(:checked)) .esp-nom, .esp:has(input:not(:checked)) .hex { opacity: 0.35; }
+.hex { width: 13px; height: 14px; background: var(--c); clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%); display: inline-block; }
+
+#poligonos { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+#poligonos button, .btn, .seg button {
+  font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 5px; cursor: pointer; }
+#poligonos button { font-family: var(--f-mono); font-size: 12px; padding: 6px 0; font-variant-numeric: tabular-nums; }
+#poligonos button:hover, .btn:hover, .seg button:hover { border-color: var(--accent); }
+#poligonos button[aria-pressed="true"], .seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+button:focus-visible, .esp input:focus-visible, label.btn:focus-within { outline: 2px solid var(--accent); outline-offset: 1px; }
+.acciones { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.btn { padding: 7px 11px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px; }
+.btn.prim { background: var(--accent-soft); border-color: var(--accent); color: var(--fg); }
+
+.seg { display: flex; gap: 0; }
+.seg button { flex: 1; padding: 7px 4px; font-size: 12.5px; border-radius: 0; margin-left: -1px; }
+.seg button:first-child { border-radius: 5px 0 0 5px; margin-left: 0; }
+.seg button:last-child { border-radius: 0 5px 5px 0; }
+.nota { font-size: 12px; color: var(--muted); line-height: 1.45; margin: 8px 0 0; }
+#aviso-fondo { color: var(--warn); }
+#csv { position: absolute; opacity: 0; width: 1px; height: 1px; }
+#csv-msg[data-tipo="error"] { color: var(--warn); }
+#csv-msg[data-tipo="ok"] { color: var(--accent); }
+code { font-family: var(--f-mono); font-size: 11.5px; }
+
+.mapa-wrap { position: relative; min-width: 0; }
+#mapa { position: absolute; inset: 0; background: var(--suelo); }
+.barra-inf { position: absolute; left: 10px; bottom: 10px; z-index: 500; display: flex; gap: 6px; flex-wrap: wrap; pointer-events: none; max-width: calc(100% - 200px); }
+.barra-inf span { background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); border-radius: 4px; padding: 3px 7px; font-size: 11px; }
+#coords { font-family: var(--f-mono); white-space: pre; font-variant-numeric: tabular-nums; }
+#panel-toggle { display: none; }
+
+/* Leaflet: ajustes visuales */
+.leaflet-container { font-family: var(--f-ui); background: var(--suelo); }
+.leaflet-bar a { background: var(--panel); color: var(--fg); border-color: var(--line); }
+.leaflet-bar a:hover { background: var(--bg); }
+.leaflet-control-scale-line { background: color-mix(in srgb, var(--panel) 85%, transparent); color: var(--fg); border-color: var(--fg); font-family: var(--f-mono); font-size: 10.5px; }
+.leaflet-control-attribution { background: color-mix(in srgb, var(--panel) 80%, transparent) !important; color: var(--muted); font-size: 10px; }
+.leaflet-control-attribution a { color: var(--muted); }
+.etq span { position: absolute; transform: translate(-50%, -50%); font: 700 13px/1 var(--f-ui); color: #1a140e;
+  text-shadow: 0 0 3px #fff8ea, 0 0 3px #fff8ea, 0 0 6px #fff8ea; pointer-events: none; white-space: nowrap; }
+.etq.on span { font-size: 16px; }
+.recuadro { stroke: #fff; }
+.tip { background: var(--panel); color: var(--fg); border: 1px solid var(--line); box-shadow: none; font-size: 12px; }
+.tip::before { display: none; }
+.ficha .leaflet-popup-content-wrapper, .ficha .leaflet-popup-tip { background: var(--panel); color: var(--fg); border-radius: 6px; box-shadow: 0 4px 18px rgb(0 0 0 / .25); }
+.ficha .leaflet-popup-content { margin: 12px 14px; font-size: 12.5px; line-height: 1.35; }
+.ficha-cab { display: flex; align-items: center; gap: 8px; font-style: italic; font-size: 14px; margin-bottom: 8px; }
+.ficha dl { margin: 0; display: grid; gap: 4px; }
+.ficha dl div { display: grid; grid-template-columns: 82px 1fr; gap: 8px; }
+.ficha dt { color: var(--muted); font-size: 11px; }
+.ficha dd { margin: 0; font-family: var(--f-mono); font-size: 11.5px; }
+.ficha-nota { margin: 8px 0 0; font-size: 11.5px; color: var(--warn); }
+.ficha a.leaflet-popup-close-button { color: var(--muted); }
+
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+  .mapa-wrap { grid-row: 1; grid-column: 1; }
+  .panel { grid-row: 1; grid-column: 1; align-self: end; z-index: 900; max-height: 58%; border-right: 0; border-top: 1px solid var(--line);
+    border-radius: 12px 12px 0 0; box-shadow: 0 -6px 24px rgb(0 0 0 / .18);
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 10px calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateY(calc(100% - 64px - env(safe-area-inset-bottom, 0px))); transition: transform .25s ease; }
+  body.panel-abierto .panel { transform: none; }
+  #panel-toggle { display: flex; all: unset; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; padding: 4px 0; }
+  #panel-toggle::after { content: "▴"; color: var(--muted); }
+  body.panel-abierto #panel-toggle::after { content: "▾"; }
+  .cab { display: none; }
+  .barra-inf { bottom: 74px; max-width: calc(100% - 20px); }
+  #coords { display: none; }
+  .leaflet-bottom.leaflet-right { bottom: 64px; }
+}
+@media (prefers-reduced-motion: reduce) { .panel { transition: none; } }
+</style>
+
+<div class="app">
+  <aside class="panel" aria-label="Controles del mapa">
+    <button id="panel-toggle" type="button" aria-expanded="false" aria-controls="panel-cuerpo">
+      <span><strong>Mapa de siembra</strong> · <span id="nivel-movil">31 polígonos</span></span>
+    </button>
+    <header class="cab">
+      <h1>Mapa de siembra de los 31 polígonos</h1>
+      <p>Proyecto de restauración CONAFOR · WGS 84 / UTM zona 14N</p>
+    </header>
+
+    <section>
+      <div class="ambito-fila"><span id="ambito">Todo el predio</span><span id="fuente" class="chip"></span></div>
+      <div class="kpis">
+        <div class="kpi"><b id="kpi-plantas">–</b><span>plantas</span></div>
+        <div class="kpi"><b id="kpi-ha">–</b><span>hectáreas</span></div>
+        <div class="kpi"><b id="kpi-dens">–</b><span>plantas/ha</span></div>
+      </div>
+      <p class="nota" id="marco"></p>
+    </section>
+
+    <section>
+      <h2 class="eyebrow">Especies <button id="todas" type="button">Ocultar todas</button></h2>
+      <ul id="especies"></ul>
+    </section>
+
+    <section>
+      <h2 class="eyebrow"><span><span id="kpi-pol">31</span> polígonos</span><button id="limpiar" type="button" hidden>Quitar selección</button></h2>
+      <div id="poligonos" role="group" aria-label="Elegir polígono"></div>
+      <div class="acciones">
+        <button class="btn prim" id="btn-detalle" type="button">Detalle 80 × 80 m</button>
+        <button class="btn" id="btn-todo" type="button">Ver todo el predio</button>
+      </div>
+      <p class="nota" id="nivel">Acércate para ver cada planta</p>
+    </section>
+
+    <section>
+      <h2 class="eyebrow">Fondo del mapa</h2>
+      <div class="seg" id="fondos">
+        <button type="button" data-f="sat" aria-pressed="false">Satélite</button>
+        <button type="button" data-f="osm" aria-pressed="false">Calles</button>
+        <button type="button" data-f="no" aria-pressed="false">Sin fondo</button>
+      </div>
+      <p class="nota" id="aviso-fondo" hidden>El fondo no se pudo cargar aquí. Funciona al abrir el sitio desde un servidor web con acceso a internet.</p>
+    </section>
+
+    <section>
+      <h2 class="eyebrow">Datos de plantas</h2>
+      <div class="acciones" style="margin-top:0">
+        <label class="btn" for="csv">Cargar CSV de plantas<input type="file" id="csv" accept=".csv,.txt,text/csv"></label>
+        <button class="btn" id="volver-sim" type="button" hidden>Volver a la simulada</button>
+      </div>
+      <p class="nota" id="csv-msg" aria-live="polite"></p>
+      <p class="nota">Columnas: <code>especie</code> y <code>este, norte</code> (UTM 14N) o <code>lat, lon</code>. Opcionales: <code>poligono</code>, <code>cambiada</code>.</p>
+    </section>
+  </aside>
+
+  <main class="mapa-wrap">
+    <div id="mapa" aria-label="Mapa de los polígonos de siembra"></div>
+    <div class="barra-inf"><span id="coords">Mueve el cursor sobre el mapa</span></div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/*DATA*/
+</script>
+<script>
+/*APP*/
+</script>

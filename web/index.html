@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>Mapa de siembra CONAFOR</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+.leaflet-image-layer,.leaflet-layer,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-pane,.leaflet-pane>canvas,.leaflet-pane>svg,.leaflet-tile,.leaflet-tile-container,.leaflet-zoom-box{position:absolute;left:0;top:0}.leaflet-container{overflow:hidden}.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-user-drag:none}.leaflet-tile::selection{background:0 0}.leaflet-safari .leaflet-tile{image-rendering:-webkit-optimize-contrast}.leaflet-safari .leaflet-tile-container{width:1600px;height:1600px;-webkit-transform-origin:0 0}.leaflet-marker-icon,.leaflet-marker-shadow{display:block}.leaflet-container .leaflet-overlay-pane svg{max-width:none!important;max-height:none!important}.leaflet-container .leaflet-marker-pane img,.leaflet-container .leaflet-shadow-pane img,.leaflet-container .leaflet-tile,.leaflet-container .leaflet-tile-pane img,.leaflet-container img.leaflet-image-layer{max-width:none!important;max-height:none!important;width:auto;padding:0}.leaflet-container img.leaflet-tile{mix-blend-mode:plus-lighter}.leaflet-container.leaflet-touch-zoom{-ms-touch-action:pan-x pan-y;touch-action:pan-x pan-y}.leaflet-container.leaflet-touch-drag{-ms-touch-action:pinch-zoom;touch-action:none;touch-action:pinch-zoom}.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom{-ms-touch-action:none;touch-action:none}.leaflet-container{-webkit-tap-highlight-color:transparent}.leaflet-container a{-webkit-tap-highlight-color:rgba(51,181,229,.4)}.leaflet-tile{filter:inherit;visibility:hidden}.leaflet-tile-loaded{visibility:inherit}.leaflet-zoom-box{width:0;height:0;-moz-box-sizing:border-box;box-sizing:border-box;z-index:800}.leaflet-overlay-pane svg{-moz-user-select:none}.leaflet-pane{z-index:400}.leaflet-tile-pane{z-index:200}.leaflet-overlay-pane{z-index:400}.leaflet-shadow-pane{z-index:500}.leaflet-marker-pane{z-index:600}.leaflet-tooltip-pane{z-index:650}.leaflet-popup-pane{z-index:700}.leaflet-map-pane canvas{z-index:100}.leaflet-map-pane svg{z-index:200}.leaflet-vml-shape{width:1px;height:1px}.lvml{behavior:url(#default#VML);display:inline-block;position:absolute}.leaflet-control{position:relative;z-index:800;pointer-events:visiblePainted;pointer-events:auto}.leaflet-bottom,.leaflet-top{position:absolute;z-index:1000;pointer-events:none}.leaflet-top{top:0}.leaflet-right{right:0}.leaflet-bottom{bottom:0}.leaflet-left{left:0}.leaflet-control{float:left;clear:both}.leaflet-right .leaflet-control{float:right}.leaflet-top .leaflet-control{margin-top:10px}.leaflet-bottom .leaflet-control{margin-bottom:10px}.leaflet-left .leaflet-control{margin-left:10px}.leaflet-right .leaflet-control{margin-right:10px}.leaflet-fade-anim .leaflet-popup{opacity:0;-webkit-transition:opacity .2s linear;-moz-transition:opacity .2s linear;transition:opacity .2s linear}.leaflet-fade-anim .leaflet-map-pane .leaflet-popup{opacity:1}.leaflet-zoom-animated{-webkit-transform-origin:0 0;-ms-transform-origin:0 0;transform-origin:0 0}svg.leaflet-zoom-animated{will-change:transform}.leaflet-zoom-anim .leaflet-zoom-animated{-webkit-transition:-webkit-transform .25s cubic-bezier(0,0,.25,1);-moz-transition:-moz-transform .25s cubic-bezier(0,0,.25,1);transition:transform .25s cubic-bezier(0,0,.25,1)}.leaflet-pan-anim .leaflet-tile,.leaflet-zoom-anim .leaflet-tile{-webkit-transition:none;-moz-transition:none;transition:none}.leaflet-zoom-anim .leaflet-zoom-hide{visibility:hidden}.leaflet-interactive{cursor:pointer}.leaflet-grab{cursor:-webkit-grab;cursor:-moz-grab;cursor:grab}.leaflet-crosshair,.leaflet-crosshair .leaflet-interactive{cursor:crosshair}.leaflet-control,.leaflet-popup-pane{cursor:auto}.leaflet-dragging .leaflet-grab,.leaflet-dragging .leaflet-grab .leaflet-interactive,.leaflet-dragging .leaflet-marker-draggable{cursor:move;cursor:-webkit-grabbing;cursor:-moz-grabbing;cursor:grabbing}.leaflet-image-layer,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-pane>svg path,.leaflet-tile-container{pointer-events:none}.leaflet-image-layer.leaflet-interactive,.leaflet-marker-icon.leaflet-interactive,.leaflet-pane>svg path.leaflet-interactive,svg.leaflet-image-layer.leaflet-interactive path{pointer-events:visiblePainted;pointer-events:auto}.leaflet-container{background:#ddd;outline-offset:1px}.leaflet-container a{color:#0078a8}.leaflet-zoom-box{border:2px dotted #38f;background:rgba(255,255,255,.5)}.leaflet-container{font-family:"Helvetica Neue",Arial,Helvetica,sans-serif;font-size:12px;font-size:.75rem;line-height:1.5}.leaflet-bar{box-shadow:0 1px 5px rgba(0,0,0,.65);border-radius:4px}.leaflet-bar a{background-color:#fff;border-bottom:1px solid #ccc;width:26px;height:26px;line-height:26px;display:block;text-align:center;text-decoration:none;color:#000}.leaflet-bar a,.leaflet-control-layers-toggle{background-position:50% 50%;background-repeat:no-repeat;display:block}.leaflet-bar a:focus,.leaflet-bar a:hover{background-color:#f4f4f4}.leaflet-bar a:first-child{border-top-left-radius:4px;border-top-right-radius:4px}.leaflet-bar a:last-child{border-bottom-left-radius:4px;border-bottom-right-radius:4px;border-bottom:none}.leaflet-bar a.leaflet-disabled{cursor:default;background-color:#f4f4f4;color:#bbb}.leaflet-touch .leaflet-bar a{width:30px;height:30px;line-height:30px}.leaflet-touch .leaflet-bar a:first-child{border-top-left-radius:2px;border-top-right-radius:2px}.leaflet-touch .leaflet-bar a:last-child{border-bottom-left-radius:2px;border-bottom-right-radius:2px}.leaflet-control-zoom-in,.leaflet-control-zoom-out{font:bold 18px 'Lucida Console',Monaco,monospace;text-indent:1px}.leaflet-touch .leaflet-control-zoom-in,.leaflet-touch .leaflet-control-zoom-out{font-size:22px}.leaflet-control-layers{box-shadow:0 1px 5px rgba(0,0,0,.4);background:#fff;border-radius:5px}.leaflet-control-layers-toggle{background-image:url(images/layers.png);width:36px;height:36px}.leaflet-retina .leaflet-control-layers-toggle{background-image:url(images/layers-2x.png);background-size:26px 26px}.leaflet-touch .leaflet-control-layers-toggle{width:44px;height:44px}.leaflet-control-layers .leaflet-control-layers-list,.leaflet-control-layers-expanded .leaflet-control-layers-toggle{display:none}.leaflet-control-layers-expanded .leaflet-control-layers-list{display:block;position:relative}.leaflet-control-layers-expanded{padding:6px 10px 6px 6px;color:#333;background:#fff}.leaflet-control-layers-scrollbar{overflow-y:scroll;overflow-x:hidden;padding-right:5px}.leaflet-control-layers-selector{margin-top:2px;position:relative;top:1px}.leaflet-control-layers label{display:block;font-size:13px;font-size:1.08333em}.leaflet-control-layers-separator{height:0;border-top:1px solid #ddd;margin:5px -10px 5px -6px}.leaflet-default-icon-path{background-image:url(images/marker-icon.png)}.leaflet-container .leaflet-control-attribution{background:#fff;background:rgba(255,255,255,.8);margin:0}.leaflet-control-attribution,.leaflet-control-scale-line{padding:0 5px;color:#333;line-height:1.4}.leaflet-control-attribution a{text-decoration:none}.leaflet-control-attribution a:focus,.leaflet-control-attribution a:hover{text-decoration:underline}.leaflet-attribution-flag{display:inline!important;vertical-align:baseline!important;width:1em;height:.6669em}.leaflet-left .leaflet-control-scale{margin-left:5px}.leaflet-bottom .leaflet-control-scale{margin-bottom:5px}.leaflet-control-scale-line{border:2px solid #777;border-top:none;line-height:1.1;padding:2px 5px 1px;white-space:nowrap;-moz-box-sizing:border-box;box-sizing:border-box;background:rgba(255,255,255,.8);text-shadow:1px 1px #fff}.leaflet-control-scale-line:not(:first-child){border-top:2px solid #777;border-bottom:none;margin-top:-2px}.leaflet-control-scale-line:not(:first-child):not(:last-child){border-bottom:2px solid #777}.leaflet-touch .leaflet-bar,.leaflet-touch .leaflet-control-attribution,.leaflet-touch .leaflet-control-layers{box-shadow:none}.leaflet-touch .leaflet-bar,.leaflet-touch .leaflet-control-layers{border:2px solid rgba(0,0,0,.2);background-clip:padding-box}.leaflet-popup{position:absolute;text-align:center;margin-bottom:20px}.leaflet-popup-content-wrapper{padding:1px;text-align:left;border-radius:12px}.leaflet-popup-content{margin:13px 24px 13px 20px;line-height:1.3;font-size:13px;font-size:1.08333em;min-height:1px}.leaflet-popup-content p{margin:17px 0;margin:1.3em 0}.leaflet-popup-tip-container{width:40px;height:20px;position:absolute;left:50%;margin-top:-1px;margin-left:-20px;overflow:hidden;pointer-events:none}.leaflet-popup-tip{width:17px;height:17px;padding:1px;margin:-10px auto 0;pointer-events:auto;-webkit-transform:rotate(45deg);-moz-transform:rotate(45deg);-ms-transform:rotate(45deg);transform:rotate(45deg)}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#fff;color:#333;box-shadow:0 3px 14px rgba(0,0,0,.4)}.leaflet-container a.leaflet-popup-close-button{position:absolute;top:0;right:0;border:none;text-align:center;width:24px;height:24px;font:16px/24px Tahoma,Verdana,sans-serif;color:#757575;text-decoration:none;background:0 0}.leaflet-container a.leaflet-popup-close-button:focus,.leaflet-container a.leaflet-popup-close-button:hover{color:#585858}.leaflet-popup-scrolled{overflow:auto}.leaflet-oldie .leaflet-popup-content-wrapper{-ms-zoom:1}.leaflet-oldie .leaflet-popup-tip{width:24px;margin:0 auto}.leaflet-oldie .leaflet-control-layers,.leaflet-oldie .leaflet-control-zoom,.leaflet-oldie .leaflet-popup-content-wrapper,.leaflet-oldie .leaflet-popup-tip{border:1px solid #999}.leaflet-div-icon{background:#fff;border:1px solid #666}.leaflet-tooltip{position:absolute;padding:6px;background-color:#fff;border:1px solid #fff;border-radius:3px;color:#222;white-space:nowrap;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}.leaflet-tooltip.leaflet-interactive{cursor:pointer;pointer-events:auto}.leaflet-tooltip-bottom:before,.leaflet-tooltip-left:before,.leaflet-tooltip-right:before,.leaflet-tooltip-top:before{position:absolute;pointer-events:none;border:6px solid transparent;background:0 0;content:""}.leaflet-tooltip-bottom{margin-top:6px}.leaflet-tooltip-top{margin-top:-6px}.leaflet-tooltip-bottom:before,.leaflet-tooltip-top:before{left:50%;margin-left:-6px}.leaflet-tooltip-top:before{bottom:0;margin-bottom:-12px;border-top-color:#fff}.leaflet-tooltip-bottom:before{top:0;margin-top:-12px;margin-left:-6px;border-bottom-color:#fff}.leaflet-tooltip-left{margin-left:-6px}.leaflet-tooltip-right{margin-left:6px}.leaflet-tooltip-left:before,.leaflet-tooltip-right:before{top:50%;margin-top:-6px}.leaflet-tooltip-left:before{right:0;margin-right:-12px;border-left-color:#fff}.leaflet-tooltip-right:before{left:0;margin-left:-12px;border-right-color:#fff}@media print{.leaflet-control{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+<style>
+/* Layout: aplicación de una pantalla, panel de control a la izquierda y mapa a sangre; en teléfono el panel es una hoja inferior. */
+:root {
+  --bg: #f4f5f0; --panel: #fbfbf8; --fg: #1d211b; --muted: #636b5f; --line: #dcdfd4;
+  --accent: #3d6a4c; --accent-soft: #e2ebdf; --suelo: #c8b796; --warn: #9a5b13;
+  --f-ui: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121511; --panel: #181c17; --fg: #e6e9e1; --muted: #9aa294; --line: #2c3229;
+  --accent: #8dbf98; --accent-soft: #23302438; --suelo: #3b342a; --warn: #e3a25a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #121511; --panel: #181c17; --fg: #e6e9e1; --muted: #9aa294; --line: #2c3229;
+  --accent: #8dbf98; --accent-soft: #23302438; --suelo: #3b342a; --warn: #e3a25a; color-scheme: dark; }
+
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-ui); font-size: 14px; overflow: hidden; }
+.app { height: 100%; display: grid; grid-template-columns: minmax(300px, 340px) 1fr; }
+
+.panel { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; min-width: 0;
+  display: flex; flex-direction: column; gap: 22px;
+  padding-block: 20px 28px; padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: 18px; }
+.cab h1 { font-size: 21px; font-weight: 750; font-stretch: 85%; letter-spacing: -0.01em; line-height: 1.15; margin: 0; text-wrap: balance; }
+.cab p { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; }
+.eyebrow { font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 0 0 8px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.eyebrow button { all: unset; cursor: pointer; color: var(--accent); letter-spacing: 0.04em; text-transform: none; font-size: 12px; }
+.eyebrow button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.kpi { padding: 10px 0 9px; display: flex; flex-direction: column; gap: 2px; }
+.kpi + .kpi { padding-left: 12px; border-left: 1px solid var(--line); }
+.kpi b { font-size: 19px; font-weight: 700; font-stretch: 85%; font-variant-numeric: tabular-nums; }
+.kpi span { font-size: 11px; color: var(--muted); }
+.ambito-fila { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+#ambito { font-weight: 650; font-size: 13px; }
+.chip { font-size: 11px; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.chip[data-tipo="sim"] { color: var(--warn); border-color: currentColor; }
+.chip[data-tipo="real"] { color: var(--accent); border-color: currentColor; }
+
+#especies { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.esp { display: grid; grid-template-columns: 18px 14px 1fr auto; align-items: center; column-gap: 8px; padding: 6px 0 9px; cursor: pointer; position: relative; }
+.esp input { margin: 0; accent-color: var(--accent); }
+.esp-nom { font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cursiva { font-style: italic; }
+.esp-n { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.barra { position: absolute; left: 40px; right: 0; bottom: 3px; height: 2px; background: var(--line); }
+.barra::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w); background: var(--c); }
+.esp:has(input:not(:checked)) .esp-nom, .esp:has(input:not(:checked)) .hex { opacity: 0.35; }
+.hex { width: 13px; height: 14px; background: var(--c); clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%); display: inline-block; }
+
+#poligonos { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+#poligonos button, .btn, .seg button {
+  font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 5px; cursor: pointer; }
+#poligonos button { font-family: var(--f-mono); font-size: 12px; padding: 6px 0; font-variant-numeric: tabular-nums; }
+#poligonos button:hover, .btn:hover, .seg button:hover { border-color: var(--accent); }
+#poligonos button[aria-pressed="true"], .seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+button:focus-visible, .esp input:focus-visible, label.btn:focus-within { outline: 2px solid var(--accent); outline-offset: 1px; }
+.acciones { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.btn { padding: 7px 11px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px; }
+.btn.prim { background: var(--accent-soft); border-color: var(--accent); color: var(--fg); }
+
+.seg { display: flex; gap: 0; }
+.seg button { flex: 1; padding: 7px 4px; font-size: 12.5px; border-radius: 0; margin-left: -1px; }
+.seg button:first-child { border-radius: 5px 0 0 5px; margin-left: 0; }
+.seg button:last-child { border-radius: 0 5px 5px 0; }
+.nota { font-size: 12px; color: var(--muted); line-height: 1.45; margin: 8px 0 0; }
+#aviso-fondo { color: var(--warn); }
+#csv { position: absolute; opacity: 0; width: 1px; height: 1px; }
+#csv-msg[data-tipo="error"] { color: var(--warn); }
+#csv-msg[data-tipo="ok"] { color: var(--accent); }
+code { font-family: var(--f-mono); font-size: 11.5px; }
+
+.mapa-wrap { position: relative; min-width: 0; }
+#mapa { position: absolute; inset: 0; background: var(--suelo); }
+.barra-inf { position: absolute; left: 10px; bottom: 10px; z-index: 500; display: flex; gap: 6px; flex-wrap: wrap; pointer-events: none; max-width: calc(100% - 200px); }
+.barra-inf span { background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); border-radius: 4px; padding: 3px 7px; font-size: 11px; }
+#coords { font-family: var(--f-mono); white-space: pre; font-variant-numeric: tabular-nums; }
+#panel-toggle { display: none; }
+
+/* Leaflet: ajustes visuales */
+.leaflet-container { font-family: var(--f-ui); background: var(--suelo); }
+.leaflet-bar a { background: var(--panel); color: var(--fg); border-color: var(--line); }
+.leaflet-bar a:hover { background: var(--bg); }
+.leaflet-control-scale-line { background: color-mix(in srgb, var(--panel) 85%, transparent); color: var(--fg); border-color: var(--fg); font-family: var(--f-mono); font-size: 10.5px; }
+.leaflet-control-attribution { background: color-mix(in srgb, var(--panel) 80%, transparent) !important; color: var(--muted); font-size: 10px; }
+.leaflet-control-attribution a { color: var(--muted); }
+.etq span { position: absolute; transform: translate(-50%, -50%); font: 700 13px/1 var(--f-ui); color: #1a140e;
+  text-shadow: 0 0 3px #fff8ea, 0 0 3px #fff8ea, 0 0 6px #fff8ea; pointer-events: none; white-space: nowrap; }
+.etq.on span { font-size: 16px; }
+.recuadro { stroke: #fff; }
+.tip { background: var(--panel); color: var(--fg); border: 1px solid var(--line); box-shadow: none; font-size: 12px; }
+.tip::before { display: none; }
+.ficha .leaflet-popup-content-wrapper, .ficha .leaflet-popup-tip { background: var(--panel); color: var(--fg); border-radius: 6px; box-shadow: 0 4px 18px rgb(0 0 0 / .25); }
+.ficha .leaflet-popup-content { margin: 12px 14px; font-size: 12.5px; line-height: 1.35; }
+.ficha-cab { display: flex; align-items: center; gap: 8px; font-style: italic; font-size: 14px; margin-bottom: 8px; }
+.ficha dl { margin: 0; display: grid; gap: 4px; }
+.ficha dl div { display: grid; grid-template-columns: 82px 1fr; gap: 8px; }
+.ficha dt { color: var(--muted); font-size: 11px; }
+.ficha dd { margin: 0; font-family: var(--f-mono); font-size: 11.5px; }
+.ficha-nota { margin: 8px 0 0; font-size: 11.5px; color: var(--warn); }
+.ficha a.leaflet-popup-close-button { color: var(--muted); }
+
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+  .mapa-wrap { grid-row: 1; grid-column: 1; }
+  .panel { grid-row: 1; grid-column: 1; align-self: end; z-index: 900; max-height: 58%; border-right: 0; border-top: 1px solid var(--line);
+    border-radius: 12px 12px 0 0; box-shadow: 0 -6px 24px rgb(0 0 0 / .18);
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 10px calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateY(calc(100% - 64px - env(safe-area-inset-bottom, 0px))); transition: transform .25s ease; }
+  body.panel-abierto .panel { transform: none; }
+  #panel-toggle { display: flex; all: unset; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; padding: 4px 0; }
+  #panel-toggle::after { content: "▴"; color: var(--muted); }
+  body.panel-abierto #panel-toggle::after { content: "▾"; }
+  .cab { display: none; }
+  .barra-inf { bottom: 74px; max-width: calc(100% - 20px); }
+  #coords { display: none; }
+  .leaflet-bottom.leaflet-right { bottom: 64px; }
+}
+@media (prefers-reduced-motion: reduce) { .panel { transition: none; } }
+</style>
+
+</head>
+<body>
+<div class="app">
+  <aside class="panel" aria-label="Controles del mapa">
+    <button id="panel-toggle" type="button" aria-expanded="false" aria-controls="panel-cuerpo">
+      <span><strong>Mapa de siembra</strong> · <span id="nivel-movil">31 polígonos</span></span>
+    </button>
+    <header class="cab">
+      <h1>Mapa de siembra de los 31 polígonos</h1>
+      <p>Proyecto de restauración CONAFOR · WGS 84 / UTM zona 14N</p>
+    </header>
+
+    <section>
+      <div class="ambito-fila"><span id="ambito">Todo el predio</span><span id="fuente" class="chip"></span></div>
+      <div class="kpis">
+        <div class="kpi"><b id="kpi-plantas">–</b><span>plantas</span></div>
+        <div class="kpi"><b id="kpi-ha">–</b><span>hectáreas</span></div>
+        <div class="kpi"><b id="kpi-dens">–</b><span>plantas/ha</span></div>
+      </div>
+      <p class="nota" id="marco"></p>
+    </section>
+
+    <section>
+      <h2 class="eyebrow">Especies <button id="todas" type="button">Ocultar todas</button></h2>
+      <ul id="especies"></ul>
+    </section>
+
+    <section>
+      <h2 class="eyebrow"><span><span id="kpi-pol">31</span> polígonos</span><button id="limpiar" type="button" hidden>Quitar selección</button></h2>
+      <div id="poligonos" role="group" aria-label="Elegir polígono"></div>
+      <div class="acciones">
+        <button class="btn prim" id="btn-detalle" type="button">Detalle 80 × 80 m</button>
+        <button class="btn" id="btn-todo" type="button">Ver todo el predio</button>
+      </div>
+      <p class="nota" id="nivel">Acércate para ver cada planta</p>
+    </section>
+
+    <section>
+      <h2 class="eyebrow">Fondo del mapa</h2>
+      <div class="seg" id="fondos">
+        <button type="button" data-f="sat" aria-pressed="false">Satélite</button>
+        <button type="button" data-f="osm" aria-pressed="false">Calles</button>
+        <button type="button" data-f="no" aria-pressed="false">Sin fondo</button>
+      </div>
+      <p class="nota" id="aviso-fondo" hidden>El fondo no se pudo cargar aquí. Funciona al abrir el sitio desde un servidor web con acceso a internet.</p>
+    </section>
+
+    <section>
+      <h2 class="eyebrow">Datos de plantas</h2>
+      <div class="acciones" style="margin-top:0">
+        <label class="btn" for="csv">Cargar CSV de plantas<input type="file" id="csv" accept=".csv,.txt,text/csv"></label>
+        <button class="btn" id="volver-sim" type="button" hidden>Volver a la simulada</button>
+      </div>
+      <p class="nota" id="csv-msg" aria-live="polite"></p>
+      <p class="nota">Columnas: <code>especie</code> y <code>este, norte</code> (UTM 14N) o <code>lat, lon</code>. Opcionales: <code>poligono</code>, <code>cambiada</code>.</p>
+    </section>
+  </aside>
+
+  <main class="mapa-wrap">
+    <div id="mapa" aria-label="Mapa de los polígonos de siembra"></div>
+    <div class="barra-inf"><span id="coords">Mueve el cursor sobre el mapa</span></div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const POLIGONOS_UTM = [{"p":1,"ha":5.1227,"ring":[[261334.73,2585391.54],[261313.38,2585214.82],[260915.13,2585352.06],[260653.42,2585373.21],[260643.3,2585390.87],[260754.14,2585387.29],[260754.15,2585390.98],[260754.14,2585387.29],[260957.87,2585387.55],[261063.83,2585391.28],[261334.73,2585391.54]]},{"p":2,"ha":7.3652,"ring":[[260559.78,2585508.78],[260558.37,2585793.24],[260754.67,2585791.84],[260754.15,2585390.98],[260754.14,2585387.29],[260643.3,2585390.87],[260559.78,2585508.78]]},{"p":3,"ha":8.1688,"ring":[[260754.14,2585387.29],[260754.15,2585390.98],[260754.67,2585791.84],[260954.31,2585793.05],[260957.87,2585387.55],[260754.14,2585387.29]]},{"p":4,"ha":8.0956,"ring":[[260954.31,2585793.05],[261156.08,2585790.68],[261160.07,2585394.66],[261063.83,2585391.28],[260957.87,2585387.55],[260954.31,2585793.05]]},{"p":5,"ha":7.2979,"ring":[[261160.07,2585394.66],[261156.08,2585790.68],[261348.3,2585791.13],[261334.73,2585391.54],[261160.07,2585394.66]]},{"p":6,"ha":4.1988,"ring":[[260333.32,2585795.12],[260558.37,2585793.24],[260559.78,2585508.78],[260479.56,2585627.54],[260333.4,2585631.69],[260333.32,2585795.12]]},{"p":7,"ha":6.2731,"ring":[[260326.66,2586194.74],[260504.88,2586192.73],[260365.44,2585952.09],[260454.84,2585892.8],[260559.8,2586084.18],[260558.37,2585793.24],[260333.32,2585795.12],[260326.66,2586194.74]]},{"p":8,"ha":7.5758,"ring":[[260559.8,2586084.18],[260624.06,2586197.03],[260757.1,2586194.87],[260754.67,2585791.84],[260558.37,2585793.24],[260559.8,2586084.18]]},{"p":9,"ha":8.0511,"ring":[[260757.1,2586194.87],[260958.33,2586193.39],[260954.31,2585793.05],[260754.67,2585791.84],[260757.1,2586194.87]]},{"p":10,"ha":8.0801,"ring":[[260958.33,2586193.39],[261159.3,2586192.81],[261156.08,2585790.68],[260954.31,2585793.05],[260958.33,2586193.39]]},{"p":11,"ha":7.711,"ring":[[261159.3,2586192.81],[261359.72,2586192.23],[261355.02,2585901.35],[261306.25,2585831.85],[261348.3,2585791.13],[261156.08,2585790.68],[261159.3,2586192.81]]},{"p":12,"ha":1.4121,"ring":[[261355.02,2585901.35],[261359.72,2586192.23],[261502.68,2586194.37],[261383.09,2586062.84],[261375.3,2585936.61],[261355.02,2585901.35]]},{"p":13,"ha":7.8686,"ring":[[260696.15,2586493.92],[260623.03,2586437.29],[260633.45,2586421.1],[260504.88,2586192.73],[260326.66,2586194.74],[260326.49,2586492.8],[260355.23,2586492.33],[260558.96,2586493.48],[260696.15,2586493.92]]},{"p":14,"ha":6.0356,"ring":[[260957.65,2586574.23],[261160.35,2586409.9],[261159.3,2586192.81],[260958.33,2586193.39],[260957.65,2586574.23]]},{"p":15,"ha":5.3705,"ring":[[261160.35,2586409.9],[261351.1,2586370.33],[261469.26,2586260.76],[261515.15,2586203.07],[261502.68,2586194.37],[261502.68,2586194.37],[261502.68,2586194.37],[261502.68,2586194.37],[261159.3,2586192.81],[261160.35,2586409.9]]},{"p":16,"ha":5.479,"ring":[[261563.24,2586591.85],[261579.33,2586571.12],[261709.57,2586624.63],[261755.36,2586662.6],[261757.58,2586664.71],[261756.48,2586413.46],[261608.1,2586261.92],[261562.01,2586312.48],[261563.24,2586591.85]]},{"p":17,"ha":6.1925,"ring":[[261360.15,2586799.93],[261541.68,2586681.17],[261508.03,2586631.89],[261563.24,2586591.85],[261562.01,2586312.48],[261454.09,2586445.91],[261357.6,2586473.12],[261360.15,2586799.93]]},{"p":18,"ha":7.0532,"ring":[[261213.58,2586891.8],[261360.15,2586799.93],[261357.6,2586473.12],[261288.91,2586492.03],[261229.22,2586509.01],[261157.95,2586554.95],[261160.86,2586891.6],[261213.58,2586891.8]]},{"p":19,"ha":4.9384,"ring":[[261757.58,2586664.71],[261915.09,2586807.89],[261905.59,2586830.28],[261955.82,2586889.09],[261955.51,2586615.04],[261756.48,2586413.46],[261757.58,2586664.71]]},{"p":20,"ha":1.4591,"ring":[[260317.15,2586895.21],[260355.73,2586894.14],[260355.23,2586492.33],[260326.49,2586492.8],[260325.67,2586543.53],[260319.16,2586547.2],[260317.15,2586895.21]]},{"p":21,"ha":8.0761,"ring":[[260355.23,2586492.33],[260355.73,2586894.14],[260555.91,2586891.48],[260558.96,2586493.48],[260355.23,2586492.33]]},{"p":22,"ha":7.7609,"ring":[[260558.96,2586493.48],[260555.91,2586891.48],[260756.79,2586890.08],[260757.87,2586551.64],[260696.15,2586493.92],[260558.96,2586493.48]]},{"p":23,"ha":5.4633,"ring":[[260756.79,2586890.08],[260958.76,2586890.84],[260956.56,2586647.19],[260889.98,2586644.71],[260817.04,2586604.07],[260757.87,2586551.64],[260756.79,2586890.08],[260756.79,2586890.08],[260756.79,2586890.08]]},{"p":24,"ha":5.6466,"ring":[[260956.56,2586647.19],[260958.76,2586890.84],[261160.86,2586891.6],[261157.95,2586554.95],[261065.29,2586615.18],[261043.2,2586620.87],[260991.87,2586646.62],[260956.56,2586647.19]]},{"p":25,"ha":5.1332,"ring":[[261955.51,2586615.04],[261955.82,2586889.09],[262160.75,2587050.1],[262156.97,2586815.26],[261955.51,2586615.04]]},{"p":26,"ha":4.7177,"ring":[[262156.97,2586815.26],[262160.75,2587050.1],[262358.49,2587189.27],[262437.47,2587095.47],[262156.97,2586815.26]]},{"p":27,"ha":1.2737,"ring":[[260317.76,2587223.53],[260356.76,2587222.45],[260355.73,2586894.14],[260317.15,2586895.21],[260317.76,2587223.53]]},{"p":28,"ha":6.628,"ring":[[260558.21,2587223.26],[260555.91,2586891.48],[260355.73,2586894.14],[260356.76,2587222.45],[260558.21,2587223.26]]},{"p":29,"ha":6.5486,"ring":[[260558.21,2587223.26],[260694.85,2587223.86],[260758.26,2587183.68],[260756.79,2586890.08],[260555.91,2586891.48],[260558.21,2587223.26]]},{"p":30,"ha":6.7026,"ring":[[260758.26,2587183.68],[261209.45,2586894.31],[261213.58,2586891.8],[261160.86,2586891.6],[260958.76,2586890.84],[260756.79,2586890.08],[260758.26,2587183.68]]},{"p":31,"ha":7.4145,"ring":[[260624.06,2586197.03],[260734.44,2586384.76],[260957.65,2586574.23],[260958.33,2586193.39],[260624.06,2586197.03]]}];
+
+</script>
+<script>
+/* Mapa de siembra CONAFOR
+ * Polígonos en UTM 14N (EPSG:32614) -> WGS84 para Leaflet.
+ * Las plantas se generan en metros (UTM) y se dibujan en una capa de canvas por teselas,
+ * así el mapa aguanta >100 mil plantas sin crear un marcador por planta.
+ */
+(function () {
+  "use strict";
+
+  // ---------- Configuración ----------
+  // Arreglo de plantación: plantas cada 8 m sobre la hilera, hileras a 2 m,
+  // hileras alternas desplazadas 4 m (tresbolillo, 16 m² por planta = 625 plantas/ha).
+  const MARCO = { enHilera: 8, entreHileras: 2, desfase: 4 };
+
+  // `img`: ruta a la imagen de la especie (png/svg con fondo transparente).
+  // Mientras sea null se dibuja el punto hexagonal con su color.
+  const ESPECIES = [
+    { id: "lech", nombre: "Agave lechuguilla",        color: "#1f77b4", peso: 7,  img: null },
+    { id: "salm", nombre: "Agave salmiana",           color: "#ff7f0e", peso: 24, img: null },
+    { id: "scab", nombre: "Agave scabra",             color: "#2ca02c", peso: 7,  img: null },
+    { id: "stri", nombre: "Agave striata",            color: "#d62728", peso: 6,  img: null },
+    { id: "cant", nombre: "Opuntia cantabrigiensis",  color: "#9467bd", peso: 7,  img: null },
+    { id: "enge", nombre: "Opuntia engelmannii",      color: "#8c564b", peso: 6,  img: null },
+    { id: "robu", nombre: "Opuntia robusta",          color: "#e377c2", peso: 10, img: null },
+    { id: "stre", nombre: "Opuntia streptacantha",    color: "#7f7f7f", peso: 10, img: null },
+    { id: "pros", nombre: "Prosopis laevigata",       color: "#bcbd22", peso: 12, img: null },
+    { id: "yucc", nombre: "Yucca filifera",           color: "#17becf", peso: 4,  img: null },
+    { id: "vaci", nombre: "vacío",                    color: "#d9d6cf", peso: 2,  img: null },
+  ];
+  const TASA_CAMBIADA = 0.003; // solo para la distribución simulada
+  const CELDA = 50;            // m, índice espacial
+
+  // ---------- Proyección UTM <-> geográficas (WGS84) ----------
+  const A = 6378137, F = 1 / 298.257223563, K0 = 0.9996;
+  const E2 = F * (2 - F), EP2 = E2 / (1 - E2);
+  const ZONA = 14, LON0 = ((ZONA - 1) * 6 - 180 + 3) * Math.PI / 180;
+  const E1 = (1 - Math.sqrt(1 - E2)) / (1 + Math.sqrt(1 - E2));
+
+  function utmALatLng(E, N) {
+    const x = E - 500000, M = N / K0;
+    const mu = M / (A * (1 - E2 / 4 - 3 * E2 * E2 / 64 - 5 * E2 * E2 * E2 / 256));
+    const p1 = mu + (3 * E1 / 2 - 27 * E1 ** 3 / 32) * Math.sin(2 * mu)
+      + (21 * E1 ** 2 / 16 - 55 * E1 ** 4 / 32) * Math.sin(4 * mu)
+      + (151 * E1 ** 3 / 96) * Math.sin(6 * mu) + (1097 * E1 ** 4 / 512) * Math.sin(8 * mu);
+    const s = Math.sin(p1), c = Math.cos(p1), t = Math.tan(p1);
+    const N1 = A / Math.sqrt(1 - E2 * s * s), T1 = t * t, C1 = EP2 * c * c;
+    const R1 = A * (1 - E2) / Math.pow(1 - E2 * s * s, 1.5), D = x / (N1 * K0);
+    const lat = p1 - (N1 * t / R1) * (D * D / 2 - (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * EP2) * D ** 4 / 24
+      + (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * EP2 - 3 * C1 * C1) * D ** 6 / 720);
+    const lon = LON0 + (D - (1 + 2 * T1 + C1) * D ** 3 / 6
+      + (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * EP2 + 24 * T1 * T1) * D ** 5 / 120) / c;
+    return [lat * 180 / Math.PI, lon * 180 / Math.PI];
+  }
+
+  function latLngAUtm(latDeg, lonDeg) {
+    const lat = latDeg * Math.PI / 180, lon = lonDeg * Math.PI / 180;
+    const s = Math.sin(lat), c = Math.cos(lat), t = Math.tan(lat);
+    const N = A / Math.sqrt(1 - E2 * s * s), T = t * t, C = EP2 * c * c, Aa = c * (lon - LON0);
+    const M = A * ((1 - E2 / 4 - 3 * E2 ** 2 / 64 - 5 * E2 ** 3 / 256) * lat
+      - (3 * E2 / 8 + 3 * E2 ** 2 / 32 + 45 * E2 ** 3 / 1024) * Math.sin(2 * lat)
+      + (15 * E2 ** 2 / 256 + 45 * E2 ** 3 / 1024) * Math.sin(4 * lat)
+      - (35 * E2 ** 3 / 3072) * Math.sin(6 * lat));
+    const E = K0 * N * (Aa + (1 - T + C) * Aa ** 3 / 6 + (5 - 18 * T + T * T + 72 * C - 58 * EP2) * Aa ** 5 / 120) + 500000;
+    const Nn = K0 * (M + N * t * (Aa * Aa / 2 + (5 - T + 9 * C + 4 * C * C) * Aa ** 4 / 24
+      + (61 - 58 * T + T * T + 600 * C - 330 * EP2) * Aa ** 6 / 720));
+    return [E, Nn];
+  }
+
+  // ---------- Geometría ----------
+  function dentro(x, y, ring) {
+    let ins = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) ins = !ins;
+    }
+    return ins;
+  }
+  function bbox(ring) {
+    let a = Infinity, b = Infinity, c = -Infinity, d = -Infinity;
+    for (const [x, y] of ring) { if (x < a) a = x; if (y < b) b = y; if (x > c) c = x; if (y > d) d = y; }
+    return [a, b, c, d];
+  }
+  // Punto de etiqueta: el centro de la hilera interior más larga cerca del centro vertical
+  function puntoEtiqueta(ring) {
+    const [x0, y0, x1, y1] = bbox(ring);
+    let mejor = null, largo = -1;
+    for (let k = 3; k <= 7; k++) {
+      const y = y0 + (y1 - y0) * k / 10, xs = [];
+      for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        const [xi, yi] = ring[i], [xj, yj] = ring[j];
+        if ((yi > y) !== (yj > y)) xs.push(xi + (y - yi) * (xj - xi) / (yj - yi));
+      }
+      xs.sort((a, b) => a - b);
+      for (let i = 0; i + 1 < xs.length; i += 2) {
+        const l = xs[i + 1] - xs[i] - Math.abs(k - 5) * 8;
+        if (l > largo) { largo = l; mejor = [(xs[i] + xs[i + 1]) / 2, y]; }
+      }
+    }
+    return mejor || [(x0 + x1) / 2, (y0 + y1) / 2];
+  }
+
+  // ---------- Datos ----------
+  const POLIS = POLIGONOS_UTM.map(p => ({ ...p, bb: bbox(p.ring), ll: p.ring.map(([x, y]) => utmALatLng(x, y)) }));
+  const AREA_TOTAL = POLIS.reduce((s, p) => s + p.ha, 0);
+
+  // PRNG determinista por posición en la retícula, para que la distribución simulada no cambie entre visitas
+  function hash(i, j, s) {
+    let h = Math.imul(i, 374761393) ^ Math.imul(j, 668265263) ^ Math.imul(s, 2246822519);
+    h = Math.imul(h ^ (h >>> 13), 1274126177);
+    return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+  }
+  const PESO_TOTAL = ESPECIES.reduce((s, e) => s + e.peso, 0);
+  function especieAleatoria(r) {
+    let acc = 0;
+    for (let k = 0; k < ESPECIES.length; k++) { acc += ESPECIES[k].peso / PESO_TOTAL; if (r < acc) return k; }
+    return ESPECIES.length - 1;
+  }
+
+  // Almacén columnar de plantas
+  let P = null;
+
+  function construirIndice(n, E, N) {
+    const [gx0, gy0] = [Math.floor(AREA_BB[0] / CELDA), Math.floor(AREA_BB[1] / CELDA)];
+    const gw = Math.ceil(AREA_BB[2] / CELDA) - gx0 + 1, gh = Math.ceil(AREA_BB[3] / CELDA) - gy0 + 1;
+    const conteo = new Uint32Array(gw * gh + 1);
+    const celda = new Int32Array(n);
+    for (let k = 0; k < n; k++) {
+      const cx = Math.floor(E[k] / CELDA) - gx0, cy = Math.floor(N[k] / CELDA) - gy0;
+      const c = (cx < 0 || cy < 0 || cx >= gw || cy >= gh) ? -1 : cy * gw + cx;
+      celda[k] = c; if (c >= 0) conteo[c + 1]++;
+    }
+    for (let c = 0; c < gw * gh; c++) conteo[c + 1] += conteo[c];
+    const orden = new Uint32Array(n), pos = conteo.slice(0, gw * gh);
+    for (let k = 0; k < n; k++) if (celda[k] >= 0) orden[pos[celda[k]]++] = k;
+    return { gx0, gy0, gw, gh, inicio: conteo, orden };
+  }
+
+  const AREA_BB = (() => {
+    const b = [Infinity, Infinity, -Infinity, -Infinity];
+    for (const p of POLIS) { b[0] = Math.min(b[0], p.bb[0]); b[1] = Math.min(b[1], p.bb[1]); b[2] = Math.max(b[2], p.bb[2]); b[3] = Math.max(b[3], p.bb[3]); }
+    return b;
+  })();
+
+  function cargarPlantas(lista, fuente) {
+    // lista: arreglo de {E, N, esp, pol, cambiada, hilera, pos}
+    const n = lista.length;
+    const st = {
+      n, fuente,
+      E: new Float64Array(n), N: new Float64Array(n), lat: new Float64Array(n), lng: new Float64Array(n),
+      esp: new Uint8Array(n), pol: new Uint8Array(n), cam: new Uint8Array(n),
+      hil: new Int32Array(n), pos: new Int32Array(n),
+    };
+    for (let k = 0; k < n; k++) {
+      const o = lista[k];
+      st.E[k] = o.E; st.N[k] = o.N; st.esp[k] = o.esp; st.pol[k] = o.pol || 0; st.cam[k] = o.cambiada ? 1 : 0;
+      st.hil[k] = o.hilera ?? -1; st.pos[k] = o.pos ?? -1;
+      const [la, lo] = utmALatLng(o.E, o.N); st.lat[k] = la; st.lng[k] = lo;
+    }
+    st.idx = construirIndice(n, st.E, st.N);
+    st.porPol = new Map();
+    for (const p of POLIS) st.porPol.set(p.p, new Uint32Array(ESPECIES.length));
+    for (let k = 0; k < n; k++) { const m = st.porPol.get(st.pol[k]); if (m) m[st.esp[k]]++; }
+    P = st;
+  }
+
+  function generarSimulada() {
+    const { enHilera, entreHileras, desfase } = MARCO;
+    const j0 = Math.floor(AREA_BB[1] / entreHileras), j1 = Math.ceil(AREA_BB[3] / entreHileras);
+    const lista = [];
+    for (const p of POLIS) {
+      const [x0, y0, x1, y1] = p.bb;
+      for (let j = Math.max(j0, Math.floor(y0 / entreHileras)); j <= Math.min(j1, Math.ceil(y1 / entreHileras)); j++) {
+        const y = j * entreHileras, off = (j & 1) ? desfase : 0;
+        for (let i = Math.floor((x0 - off) / enHilera); i * enHilera + off <= x1; i++) {
+          const x = i * enHilera + off;
+          if (!dentro(x, y, p.ring)) continue;
+          if (reclamado.has(i + "," + j)) continue;
+          reclamado.add(i + "," + j);
+          lista.push({
+            E: x, N: y, pol: p.p,
+            hilera: j - Math.floor(y0 / entreHileras) + 1, pos: i - Math.floor(x0 / enHilera) + 1, // relativas al polígono
+            esp: especieAleatoria(hash(i, j, 7)),
+            cambiada: hash(i, j, 13) < TASA_CAMBIADA,
+          });
+        }
+      }
+    }
+    reclamado.clear();
+    cargarPlantas(lista, "simulada");
+  }
+  const reclamado = new Set(); // evita duplicar plantas sobre linderos compartidos
+
+  // ---------- Mapa ----------
+  const map = L.map("mapa", {
+    zoomControl: false, maxZoom: 22, minZoom: 13, zoomSnap: 0.25, wheelPxPerZoomLevel: 90,
+    preferCanvas: true, attributionControl: true,
+  });
+  L.control.zoom({ position: "topright", zoomInTitle: "Acercar", zoomOutTitle: "Alejar" }).addTo(map);
+  L.control.scale({ position: "bottomright", imperial: false, maxWidth: 160 }).addTo(map);
+  map.attributionControl.setPrefix(false);
+
+  const FONDOS = {
+    sat: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      { maxNativeZoom: 18, maxZoom: 22, attribution: "Imagen © Esri, Maxar, Earthstar Geographics" }),
+    osm: L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      { maxNativeZoom: 19, maxZoom: 22, attribution: "© OpenStreetMap" }),
+    no: null,
+  };
+  let fondoActual = null, erroresFondo = 0;
+  function ponerFondo(id) {
+    if (fondoActual) map.removeLayer(fondoActual);
+    fondoActual = FONDOS[id];
+    erroresFondo = 0; document.getElementById("aviso-fondo").hidden = true;
+    if (fondoActual) {
+      fondoActual.off("tileerror").on("tileerror", () => {
+        if (++erroresFondo === 3) document.getElementById("aviso-fondo").hidden = false;
+      });
+      fondoActual.addTo(map); fondoActual.bringToBack();
+    }
+    document.querySelectorAll("#fondos button").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === id));
+    try { localStorage.setItem("fondo", id); } catch (e) {}
+  }
+
+  // Polígonos
+  let seleccion = null;
+  const capasPol = new Map();
+  const grupoPol = L.featureGroup().addTo(map);
+  for (const p of POLIS) {
+    const capa = L.polygon(p.ll, { className: "pol", weight: 1.4, color: "#2b2118", fillOpacity: 0, interactive: true });
+    capa.on("click", (ev) => { if (!clicEnPlanta(ev)) seleccionar(p.p, false); });
+    capa.bindTooltip(`Polígono ${p.p} · ${p.ha.toFixed(2)} ha`, { sticky: true, className: "tip", direction: "top", offset: [0, -8] });
+    capa.addTo(grupoPol);
+    const [ex, ny] = puntoEtiqueta(p.ring);
+    const et = L.marker(utmALatLng(ex, ny), {
+      icon: L.divIcon({ className: "etq", html: `<span>${p.p}</span>`, iconSize: [0, 0] }), interactive: false, keyboard: false,
+    }).addTo(map);
+    capasPol.set(p.p, { capa, et });
+  }
+
+  // Recuadro de detalle 80 × 80 m
+  let recuadro = null;
+  function vistaDetalle(lado = 80) {
+    const p = POLIS.find(q => q.p === (seleccion ?? 9));
+    const [cx, cy] = puntoEtiqueta(p.ring);
+    const h = lado / 2;
+    const esquinas = [[cx - h, cy - h], [cx + h, cy - h], [cx + h, cy + h], [cx - h, cy + h]].map(([x, y]) => utmALatLng(x, y));
+    if (recuadro) map.removeLayer(recuadro);
+    recuadro = L.polygon(esquinas, { className: "recuadro", weight: 1.5, dashArray: "6 5", fill: false, interactive: false }).addTo(map);
+    map.fitBounds(recuadro.getBounds(), { padding: [24, 24], maxZoom: 22 });
+    if (seleccion == null) seleccionar(9, false);
+  }
+
+  // ---------- Capa de plantas (canvas por teselas) ----------
+  const visibles = new Array(ESPECIES.length).fill(true);
+  const imagenes = ESPECIES.map(e => {
+    if (!e.img) return null;
+    const im = new Image(); im.src = e.img; im.onload = () => capaPlantas.redraw(); return im;
+  });
+
+  function metrosPorPx(z) {
+    return 40075016.686 * Math.cos(map.getCenter().lat * Math.PI / 180) / (256 * Math.pow(2, z));
+  }
+
+  function hexagono(ctx, x, y, r) {
+    ctx.moveTo(x, y - r);
+    ctx.lineTo(x + r * 0.866, y - r * 0.5); ctx.lineTo(x + r * 0.866, y + r * 0.5);
+    ctx.lineTo(x, y + r); ctx.lineTo(x - r * 0.866, y + r * 0.5); ctx.lineTo(x - r * 0.866, y - r * 0.5);
+    ctx.closePath();
+  }
+
+  // Recorre las plantas cuyas coordenadas UTM caen en el rectángulo [e0,n0]-[e1,n1]
+  function porRango(e0, n0, e1, n1, fn) {
+    if (!P) return;
+    const { gx0, gy0, gw, gh, inicio, orden } = P.idx;
+    const cx0 = Math.max(0, Math.floor(e0 / CELDA) - gx0), cx1 = Math.min(gw - 1, Math.floor(e1 / CELDA) - gx0);
+    const cy0 = Math.max(0, Math.floor(n0 / CELDA) - gy0), cy1 = Math.min(gh - 1, Math.floor(n1 / CELDA) - gy0);
+    for (let cy = cy0; cy <= cy1; cy++) for (let cx = cx0; cx <= cx1; cx++) {
+      const c = cy * gw + cx;
+      for (let q = inicio[c]; q < inicio[c + 1]; q++) fn(orden[q]);
+    }
+  }
+
+  const CapaPlantas = L.GridLayer.extend({
+    createTile(coords) {
+      const t = document.createElement("canvas"), ts = this.getTileSize(), dpr = window.devicePixelRatio || 1;
+      t.width = ts.x * dpr; t.height = ts.y * dpr;
+      const ctx = t.getContext("2d"); ctx.scale(dpr, dpr);
+      if (!P) return t;
+      const z = coords.z, origen = coords.scaleBy(ts);
+      const nw = map.unproject(origen, z), se = map.unproject(origen.add(ts), z);
+      const mpp = metrosPorPx(z);
+      const radioM = 1.5; // radio "real" del símbolo, en metros
+      let r = radioM / mpp;
+      const margen = Math.max(r, 2) * mpp + 1;
+      const a = latLngAUtm(nw.lat, nw.lng), b = latLngAUtm(se.lat, se.lng);
+      const c = latLngAUtm(nw.lat, se.lng), d = latLngAUtm(se.lat, nw.lng);
+      const e0 = Math.min(a[0], b[0], c[0], d[0]) - margen, e1 = Math.max(a[0], b[0], c[0], d[0]) + margen;
+      const n0 = Math.min(a[1], b[1], c[1], d[1]) - margen, n1 = Math.max(a[1], b[1], c[1], d[1]) + margen;
+
+      const modo = r < 1.6 ? "pixel" : (r < 9 || !imagenes.some(Boolean)) ? "hex" : "img";
+      if (modo === "pixel") r = Math.max(0.7, r);
+      const sel = seleccion;
+      const cambiadas = [];
+      const grupos = ESPECIES.map(() => []);
+      porRango(e0, n0, e1, n1, (k) => {
+        const s = P.esp[k]; if (!visibles[s]) return;
+        const pt = map.project([P.lat[k], P.lng[k]], z);
+        const x = pt.x - origen.x, y = pt.y - origen.y;
+        if (x < -r - 2 || y < -r - 2 || x > ts.x + r + 2 || y > ts.y + r + 2) return;
+        grupos[s].push(x, y, sel != null && P.pol[k] !== sel ? 1 : 0);
+        if (P.cam[k]) cambiadas.push(x, y);
+      });
+
+      for (let s = 0; s < ESPECIES.length; s++) {
+        const g = grupos[s]; if (!g.length) continue;
+        const im = imagenes[s];
+        for (const atenuado of [0, 1]) {
+          ctx.globalAlpha = atenuado ? 0.28 : 1;
+          ctx.fillStyle = ESPECIES[s].color;
+          if (modo === "pixel") {
+            const w = r * 2;
+            for (let q = 0; q < g.length; q += 3) if (g[q + 2] === atenuado) ctx.fillRect(g[q] - r, g[q + 1] - r, w, w);
+          } else if (modo === "img" && im && im.complete && im.naturalWidth) {
+            const w = r * 2.4;
+            for (let q = 0; q < g.length; q += 3) if (g[q + 2] === atenuado) ctx.drawImage(im, g[q] - w / 2, g[q + 1] - w / 2, w, w);
+          } else {
+            ctx.beginPath();
+            for (let q = 0; q < g.length; q += 3) if (g[q + 2] === atenuado) hexagono(ctx, g[q], g[q + 1], r);
+            ctx.fill();
+            if (r > 5) { ctx.strokeStyle = "rgba(20,14,8,.35)"; ctx.lineWidth = 0.8; ctx.stroke(); }
+          }
+        }
+      }
+      ctx.globalAlpha = 1;
+      if (r >= 2.5 && cambiadas.length) {
+        ctx.beginPath();
+        for (let q = 0; q < cambiadas.length; q += 2) { ctx.moveTo(cambiadas[q] + r * 1.5, cambiadas[q + 1]); ctx.arc(cambiadas[q], cambiadas[q + 1], r * 1.5, 0, Math.PI * 2); }
+        ctx.lineWidth = Math.max(1.5, r * 0.22); ctx.strokeStyle = "#111"; ctx.stroke();
+        ctx.lineWidth = Math.max(0.8, r * 0.1); ctx.strokeStyle = "#fff"; ctx.stroke();
+      }
+      return t;
+    },
+  });
+  const capaPlantas = new CapaPlantas({ pane: "overlayPane", maxZoom: 22, updateWhenZooming: false, keepBuffer: 1 });
+
+  // Clic sobre una planta -> ficha
+  function clicEnPlanta(ev) {
+    if (!P) return false;
+    const z = map.getZoom(), mpp = metrosPorPx(z);
+    if (1.5 / mpp < 3) return false; // demasiado lejos para elegir una planta
+    const [E, N] = latLngAUtm(ev.latlng.lat, ev.latlng.lng);
+    const tol = Math.max(2.2, 7 * mpp);
+    let mejor = -1, dmin = tol * tol;
+    porRango(E - tol, N - tol, E + tol, N + tol, (k) => {
+      if (!visibles[P.esp[k]]) return;
+      const d = (P.E[k] - E) ** 2 + (P.N[k] - N) ** 2;
+      if (d < dmin) { dmin = d; mejor = k; }
+    });
+    if (mejor < 0) return false;
+    const k = mejor, sp = ESPECIES[P.esp[k]];
+    const fila = P.hil[k] >= 0 ? `<div><dt>Hilera / posición</dt><dd>${P.hil[k]} / ${P.pos[k]}</dd></div>` : "";
+    L.popup({ className: "ficha", offset: [0, -4], maxWidth: 260 })
+      .setLatLng([P.lat[k], P.lng[k]])
+      .setContent(`<div class="ficha-cab"><span class="hex" style="--c:${sp.color}"></span><strong>${sp.nombre}</strong></div>
+        <dl>
+          <div><dt>Planta</dt><dd>#${k + 1}</dd></div>
+          <div><dt>Polígono</dt><dd>${P.pol[k] || "—"}</dd></div>
+          ${fila}
+          <div><dt>UTM 14N</dt><dd>${fmt(P.E[k], 1)} E<br>${fmt(P.N[k], 1)} N</dd></div>
+          <div><dt>Geográficas</dt><dd>${P.lat[k].toFixed(6)}, ${P.lng[k].toFixed(6)}</dd></div>
+        </dl>
+        ${P.cam[k] ? '<p class="ficha-nota">Posición cambiada</p>' : ""}`)
+      .openOn(map);
+    return true;
+  }
+
+  // ---------- Interfaz ----------
+  const fmt = (v, d = 0) => v.toLocaleString("es-MX", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const $ = (s) => document.querySelector(s);
+
+  function totalesEspecie(pol) {
+    const t = new Uint32Array(ESPECIES.length);
+    if (!P) return t;
+    if (pol == null) { for (const m of P.porPol.values()) for (let s = 0; s < t.length; s++) t[s] += m[s]; }
+    else { const m = P.porPol.get(pol); if (m) t.set(m); }
+    return t;
+  }
+
+  function pintarLeyenda() {
+    const t = totalesEspecie(seleccion);
+    const total = t.reduce((a, b) => a + b, 0) || 1;
+    $("#especies").innerHTML = ESPECIES.map((e, s) => `
+      <li>
+        <label class="esp" for="esp-${e.id}">
+          <input type="checkbox" id="esp-${e.id}" data-s="${s}" ${visibles[s] ? "checked" : ""}>
+          <span class="hex" style="--c:${e.color}"></span>
+          <span class="esp-nom${e.id === "vaci" ? "" : " cursiva"}">${e.nombre}</span>
+          <span class="esp-n">${fmt(t[s])}</span>
+          <span class="barra" style="--w:${(t[s] / total * 100).toFixed(1)}%;--c:${e.color}"></span>
+        </label>
+      </li>`).join("");
+    const plantas = t.reduce((a, b) => a + b, 0) - t[ESPECIES.length - 1];
+    const ha = seleccion == null ? AREA_TOTAL : POLIS.find(p => p.p === seleccion).ha;
+    $("#kpi-plantas").textContent = fmt(plantas);
+    $("#kpi-ha").textContent = fmt(ha, 2);
+    $("#kpi-dens").textContent = fmt(plantas / ha);
+    $("#ambito").textContent = seleccion == null ? "Todo el predio" : `Polígono ${seleccion}`;
+    $("#limpiar").hidden = seleccion == null;
+    $("#fuente").textContent = P && P.fuente === "simulada" ? "Distribución simulada" : `Datos cargados: ${P ? P.fuente : ""}`;
+    $("#fuente").dataset.tipo = P && P.fuente === "simulada" ? "sim" : "real";
+  }
+
+  function pintarPoligonos() {
+    $("#poligonos").innerHTML = POLIS.map(p =>
+      `<button type="button" data-p="${p.p}" aria-pressed="${seleccion === p.p}" title="${p.ha.toFixed(2)} ha">${p.p}</button>`).join("");
+  }
+
+  function seleccionar(id, encuadrar = true) {
+    seleccion = id;
+    for (const [pid, { capa, et }] of capasPol) {
+      const on = pid === id;
+      capa.setStyle({ weight: on ? 3 : 1.4, color: on ? "#fff4dc" : "#2b2118" });
+      if (on) capa.bringToFront();
+      et.getElement()?.classList.toggle("on", on);
+    }
+    if (id != null && encuadrar) map.fitBounds(capasPol.get(id).capa.getBounds(), { padding: [30, 30] });
+    pintarLeyenda(); pintarPoligonos();
+    capaPlantas.redraw();
+  }
+
+  $("#especies").addEventListener("change", (e) => {
+    const s = +e.target.dataset.s; if (Number.isNaN(s)) return;
+    visibles[s] = e.target.checked; capaPlantas.redraw();
+  });
+  $("#todas").addEventListener("click", () => {
+    const todas = visibles.every(Boolean);
+    visibles.fill(!todas); pintarLeyenda(); capaPlantas.redraw();
+    $("#todas").textContent = todas ? "Mostrar todas" : "Ocultar todas";
+  });
+  $("#poligonos").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    const id = +b.dataset.p; seleccionar(seleccion === id ? null : id, seleccion !== id);
+  });
+  $("#limpiar").addEventListener("click", () => { seleccionar(null); map.fitBounds(grupoPol.getBounds(), { padding: [20, 20] }); });
+  $("#btn-detalle").addEventListener("click", () => vistaDetalle(80));
+  $("#btn-todo").addEventListener("click", () => {
+    if (recuadro) { map.removeLayer(recuadro); recuadro = null; }
+    map.fitBounds(grupoPol.getBounds(), { padding: [20, 20] });
+  });
+  document.querySelectorAll("#fondos button").forEach(b => b.addEventListener("click", () => ponerFondo(b.dataset.f)));
+  $("#panel-toggle").addEventListener("click", () => {
+    const abierto = document.body.classList.toggle("panel-abierto");
+    $("#panel-toggle").setAttribute("aria-expanded", abierto);
+  });
+
+  // Coordenadas bajo el cursor
+  map.on("mousemove", (e) => {
+    const [E, N] = latLngAUtm(e.latlng.lat, e.latlng.lng);
+    $("#coords").textContent = `${fmt(E, 1)} E  ${fmt(N, 1)} N   ·   ${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
+  });
+  map.on("zoomend", () => {
+    const m = metrosPorPx(map.getZoom());
+    $("#nivel").textContent = 1.5 / m < 1.6 ? "Acércate para ver cada planta" : 1.5 / m < 3 ? "Plantas visibles" : "Toca una planta para ver su ficha";
+  });
+
+  // ---------- CSV con plantas reales ----------
+  // Columnas: especie, y "este,norte" (UTM 14N) o "lat,lon". Opcionales: poligono, cambiada (1/0, si/no).
+  function parseCSV(txt) {
+    const lineas = txt.replace(/\r/g, "").split("\n").filter(l => l.trim());
+    const sep = (lineas[0].match(/;/g) || []).length > (lineas[0].match(/,/g) || []).length ? ";" : ",";
+    const cab = lineas[0].split(sep).map(h => h.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""));
+    const col = (...n) => cab.findIndex(h => n.includes(h));
+    const ci = { esp: col("especie", "species", "nombre"), e: col("este", "x", "easting", "e"), n: col("norte", "y", "northing", "n"),
+      lat: col("lat", "latitud"), lon: col("lon", "lng", "longitud"), pol: col("poligono", "polygon"), cam: col("cambiada", "cambio", "changed") };
+    if (ci.esp < 0 || ((ci.e < 0 || ci.n < 0) && (ci.lat < 0 || ci.lon < 0)))
+      throw new Error("El archivo necesita las columnas «especie» y «este, norte» (UTM 14N) o «lat, lon».");
+    const nombres = ESPECIES.map(e => e.nombre.toLowerCase());
+    const out = [], noReconocidas = new Set();
+    for (let i = 1; i < lineas.length; i++) {
+      const c = lineas[i].split(sep).map(v => v.trim());
+      const nom = (c[ci.esp] || "").toLowerCase();
+      let s = nombres.indexOf(nom);
+      if (s < 0) s = nombres.findIndex(n => n.split(" ")[1] && nom.includes(n.split(" ")[1]));
+      if (s < 0) { noReconocidas.add(c[ci.esp]); continue; }
+      let E, N;
+      if (ci.e >= 0 && ci.n >= 0) { E = parseFloat(c[ci.e]); N = parseFloat(c[ci.n]); }
+      else [E, N] = latLngAUtm(parseFloat(c[ci.lat]), parseFloat(c[ci.lon]));
+      if (!isFinite(E) || !isFinite(N)) continue;
+      let pol = ci.pol >= 0 ? parseInt(c[ci.pol], 10) : 0;
+      if (!pol) { const q = POLIS.find(p => E >= p.bb[0] && E <= p.bb[2] && N >= p.bb[1] && N <= p.bb[3] && dentro(E, N, p.ring)); pol = q ? q.p : 0; }
+      const cam = ci.cam >= 0 && /^(1|si|sí|true|x|s)$/i.test(c[ci.cam] || "");
+      out.push({ E, N, esp: s, pol, cambiada: cam });
+    }
+    return { out, noReconocidas };
+  }
+  $("#csv").addEventListener("change", async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const msg = $("#csv-msg");
+    try {
+      const { out, noReconocidas } = parseCSV(await f.text());
+      if (!out.length) throw new Error("No se encontró ninguna planta con especie y coordenadas válidas.");
+      cargarPlantas(out, f.name);
+      msg.textContent = `${fmt(out.length)} plantas cargadas.` + (noReconocidas.size ? ` Especies sin reconocer: ${[...noReconocidas].slice(0, 4).join(", ")}.` : "");
+      msg.dataset.tipo = "ok";
+      $("#volver-sim").hidden = false;
+      pintarLeyenda(); capaPlantas.redraw();
+    } catch (err) { msg.textContent = err.message; msg.dataset.tipo = "error"; }
+    e.target.value = "";
+  });
+  $("#volver-sim").addEventListener("click", () => {
+    generarSimulada(); $("#volver-sim").hidden = true; $("#csv-msg").textContent = "";
+    pintarLeyenda(); capaPlantas.redraw();
+  });
+
+  // ---------- Arranque ----------
+  generarSimulada();
+  capaPlantas.addTo(map);
+  map.fitBounds(grupoPol.getBounds(), { padding: [20, 20] });
+  let fondo = "sat"; try { fondo = localStorage.getItem("fondo") || "sat"; } catch (e) {}
+  ponerFondo(FONDOS.hasOwnProperty(fondo) ? fondo : "sat");
+  $("#kpi-pol").textContent = POLIS.length;
+  $("#marco").textContent = `${MARCO.enHilera} m en hilera · ${MARCO.entreHileras} m entre hileras · tresbolillo`;
+  pintarPoligonos(); pintarLeyenda();
+  map.fire("zoomend");
+})();
+
+</script>
+</body>
+</html>
