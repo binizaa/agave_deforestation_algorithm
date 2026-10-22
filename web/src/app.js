@@ -11,19 +11,19 @@
   // hileras alternas desplazadas 4 m (tresbolillo, 16 m² por planta = 625 plantas/ha).
   const MARCO = { enHilera: 8, entreHileras: 2, desfase: 4 };
 
-  // `img`: ruta a la imagen de la especie (png/svg con fondo transparente).
-  // Mientras sea null se dibuja el punto hexagonal con su color.
+  // `img`: ruta a la imagen de la especie (png/svg con fondo transparente). Con null se dibuja
+  // un hexágono de su color. `color` se usa en la vista lejana, donde cada planta es un punto.
   const ESPECIES = [
-    { id: "lech", nombre: "Agave lechuguilla",        color: "#1f77b4", peso: 7,  img: null },
-    { id: "salm", nombre: "Agave salmiana",           color: "#ff7f0e", peso: 24, img: null },
-    { id: "scab", nombre: "Agave scabra",             color: "#2ca02c", peso: 7,  img: null },
-    { id: "stri", nombre: "Agave striata",            color: "#d62728", peso: 6,  img: null },
-    { id: "cant", nombre: "Opuntia cantabrigiensis",  color: "#9467bd", peso: 7,  img: null },
-    { id: "enge", nombre: "Opuntia engelmannii",      color: "#8c564b", peso: 6,  img: null },
-    { id: "robu", nombre: "Opuntia robusta",          color: "#e377c2", peso: 10, img: null },
-    { id: "stre", nombre: "Opuntia streptacantha",    color: "#7f7f7f", peso: 10, img: null },
-    { id: "pros", nombre: "Prosopis laevigata",       color: "#bcbd22", peso: 12, img: null },
-    { id: "yucc", nombre: "Yucca filifera",           color: "#17becf", peso: 4,  img: null },
+    { id: "lech", nombre: "Agave lechuguilla",        color: "#1f77b4", peso: 7,  img: "img/lech.png" },
+    { id: "salm", nombre: "Agave salmiana",           color: "#ff7f0e", peso: 24, img: "img/salm.png" },
+    { id: "scab", nombre: "Agave scabra",             color: "#2ca02c", peso: 7,  img: "img/scab.png" },
+    { id: "stri", nombre: "Agave striata",            color: "#d62728", peso: 6,  img: "img/stri.png" },
+    { id: "cant", nombre: "Opuntia cantabrigiensis",  color: "#9467bd", peso: 7,  img: "img/cant.png" },
+    { id: "enge", nombre: "Opuntia engelmannii",      color: "#8c564b", peso: 6,  img: "img/enge.png" },
+    { id: "robu", nombre: "Opuntia robusta",          color: "#e377c2", peso: 10, img: "img/robu.png" },
+    { id: "stre", nombre: "Opuntia streptacantha",    color: "#7f7f7f", peso: 10, img: "img/stre.png" },
+    { id: "pros", nombre: "Prosopis laevigata",       color: "#bcbd22", peso: 12, img: "img/pros.png" },
+    { id: "yucc", nombre: "Yucca filifera",           color: "#17becf", peso: 4,  img: "img/yucc.png" },
     { id: "vaci", nombre: "vacío",                    color: "#d9d6cf", peso: 2,  img: null },
   ];
   const TASA_CAMBIADA = 0.003; // solo para la distribución simulada
@@ -253,8 +253,15 @@
   const visibles = new Array(ESPECIES.length).fill(true);
   const imagenes = ESPECIES.map(e => {
     if (!e.img) return null;
-    const im = new Image(); im.src = e.img; im.onload = () => capaPlantas.redraw(); return im;
+    const im = new Image();
+    im.src = (window.IMAGENES_INLINE && IMAGENES_INLINE[e.id]) || e.img; // build.py las incrusta en index.html
+    im.onload = () => capaPlantas.redraw(); return im;
   });
+  const fuenteImg = (s) => imagenes[s] ? imagenes[s].src : null;
+  function icono(s, clase = "ico-esp") {
+    const src = fuenteImg(s);
+    return src ? `<img class="${clase}" src="${src}" alt="">` : `<span class="hex" style="--c:${ESPECIES[s].color}"></span>`;
+  }
 
   function metrosPorPx(z) {
     return 40075016.686 * Math.cos(map.getCenter().lat * Math.PI / 180) / (256 * Math.pow(2, z));
@@ -290,13 +297,13 @@
       const mpp = metrosPorPx(z);
       const radioM = 1.5; // radio "real" del símbolo, en metros
       let r = radioM / mpp;
-      const margen = Math.max(r, 2) * mpp + 1;
+      const margen = Math.max(r * 1.6, 2) * mpp + 1; // las imágenes sobresalen del radio
       const a = latLngAUtm(nw.lat, nw.lng), b = latLngAUtm(se.lat, se.lng);
       const c = latLngAUtm(nw.lat, se.lng), d = latLngAUtm(se.lat, nw.lng);
       const e0 = Math.min(a[0], b[0], c[0], d[0]) - margen, e1 = Math.max(a[0], b[0], c[0], d[0]) + margen;
       const n0 = Math.min(a[1], b[1], c[1], d[1]) - margen, n1 = Math.max(a[1], b[1], c[1], d[1]) + margen;
 
-      const modo = r < 1.6 ? "pixel" : (r < 9 || !imagenes.some(Boolean)) ? "hex" : "img";
+      const modo = r < 1.6 ? "pixel" : r < 3.5 ? "hex" : "img";
       if (modo === "pixel") r = Math.max(0.7, r);
       const sel = seleccion;
       const cambiadas = [];
@@ -305,7 +312,8 @@
         const s = P.esp[k]; if (!visibles[s]) return;
         const pt = map.project([P.lat[k], P.lng[k]], z);
         const x = pt.x - origen.x, y = pt.y - origen.y;
-        if (x < -r - 2 || y < -r - 2 || x > ts.x + r + 2 || y > ts.y + r + 2) return;
+        const m = r * 1.6 + 2;
+        if (x < -m || y < -m || x > ts.x + m || y > ts.y + m) return;
         grupos[s].push(x, y, sel != null && P.pol[k] !== sel ? 1 : 0);
         if (P.cam[k]) cambiadas.push(x, y);
       });
@@ -320,11 +328,14 @@
             const w = r * 2;
             for (let q = 0; q < g.length; q += 3) if (g[q + 2] === atenuado) ctx.fillRect(g[q] - r, g[q + 1] - r, w, w);
           } else if (modo === "img" && im && im.complete && im.naturalWidth) {
-            const w = r * 2.4;
-            for (let q = 0; q < g.length; q += 3) if (g[q + 2] === atenuado) ctx.drawImage(im, g[q] - w / 2, g[q + 1] - w / 2, w, w);
+            // la imagen ocupa ~3.9 m en su lado mayor, conservando proporciones
+            const lado = r * 2.6, esc = lado / Math.max(im.naturalWidth, im.naturalHeight);
+            const w = im.naturalWidth * esc, h = im.naturalHeight * esc;
+            for (let q = 0; q < g.length; q += 3) if (g[q + 2] === atenuado) ctx.drawImage(im, g[q] - w / 2, g[q + 1] - h / 2, w, h);
           } else {
             ctx.beginPath();
-            for (let q = 0; q < g.length; q += 3) if (g[q + 2] === atenuado) hexagono(ctx, g[q], g[q + 1], r);
+            const rh = modo === "img" ? r * 0.45 : r; // en vista de imágenes, los huecos se marcan pequeños
+            for (let q = 0; q < g.length; q += 3) if (g[q + 2] === atenuado) hexagono(ctx, g[q], g[q + 1], rh);
             ctx.fill();
             if (r > 5) { ctx.strokeStyle = "rgba(20,14,8,.35)"; ctx.lineWidth = 0.8; ctx.stroke(); }
           }
@@ -360,7 +371,7 @@
     const fila = P.hil[k] >= 0 ? `<div><dt>Hilera / posición</dt><dd>${P.hil[k]} / ${P.pos[k]}</dd></div>` : "";
     L.popup({ className: "ficha", offset: [0, -4], maxWidth: 260 })
       .setLatLng([P.lat[k], P.lng[k]])
-      .setContent(`<div class="ficha-cab"><span class="hex" style="--c:${sp.color}"></span><strong>${sp.nombre}</strong></div>
+      .setContent(`<div class="ficha-cab">${icono(P.esp[k], "ico-ficha")}<strong>${sp.nombre}</strong></div>
         <dl>
           <div><dt>Planta</dt><dd>#${k + 1}</dd></div>
           <div><dt>Polígono</dt><dd>${P.pol[k] || "—"}</dd></div>
@@ -392,7 +403,7 @@
       <li>
         <label class="esp" for="esp-${e.id}">
           <input type="checkbox" id="esp-${e.id}" data-s="${s}" ${visibles[s] ? "checked" : ""}>
-          <span class="hex" style="--c:${e.color}"></span>
+          ${icono(s)}
           <span class="esp-txt">
             <span class="esp-nom${e.id === "vaci" ? "" : " cursiva"}">${e.nombre}</span>
             <span class="esp-sub">${fmt(t[s])} · ${(t[s] / total * 100).toFixed(1)} %</span>
@@ -464,7 +475,7 @@
     const esps = ESPECIES.map((e, s) => ({ e, s })).filter(({ e }) => e.nombre.toLowerCase().includes(q)).slice(0, 6);
     const items = [
       ...pols.map(p => `<li><button type="button" data-p="${p.p}"><span class="ms">location_on</span><span><b>Polígono ${p.p}</b><small>${fmt(p.ha, 2)} ha</small></span></button></li>`),
-      ...esps.map(({ e, s }) => `<li><button type="button" data-s="${s}"><span class="hex" style="--c:${e.color}"></span><span><b class="${e.id === "vaci" ? "" : "cursiva"}">${e.nombre}</b><small>Mostrar solo esta especie</small></span></button></li>`),
+      ...esps.map(({ e, s }) => `<li><button type="button" data-s="${s}">${icono(s)}<span><b class="${e.id === "vaci" ? "" : "cursiva"}">${e.nombre}</b><small>Mostrar solo esta especie</small></span></button></li>`),
     ];
     sugerencias.innerHTML = items.length ? items.join("") : `<li class="vacio">Sin resultados para «${buscador.value.trim()}»</li>`;
     sugerencias.hidden = false;

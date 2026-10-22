@@ -20,15 +20,29 @@ Por ahora la distribución es **simulada**: tresbolillo de 8 m en hilera y 2 m e
 | `poligono` | no (se calcula) | `9` |
 | `cambiada` | no | `1` / `si` |
 
-### Imágenes por especie (siguiente paso)
+### Imágenes por especie
 
-En `web/src/app.js`, cada especie de `ESPECIES` tiene un campo `img: null`. Al poner una ruta (por ejemplo `img: "img/agave_salmiana.png"`, PNG o SVG con fondo transparente), esa imagen sustituye al hexágono cuando el zoom es suficiente; mientras tanto se usan los puntos de color.
+Las ilustraciones de cada especie están en `web/img/` (extraídas del diseño de Canva, en el orden de la leyenda). Al acercarse, cada planta se dibuja con su imagen; en la vista lejana se usa un punto del color de la especie. Para cambiar una ilustración, reemplaza el PNG (fondo transparente) con el mismo nombre y ejecuta `python3 web/build.py`, que las incrusta en `index.html`.
+
+| archivo | especie |
+|---|---|
+| `lech.png` | Agave lechuguilla |
+| `salm.png` | Agave salmiana |
+| `scab.png` | Agave scabra |
+| `stri.png` | Agave striata |
+| `cant.png` | Opuntia cantabrigiensis |
+| `enge.png` | Opuntia engelmannii |
+| `robu.png` | Opuntia robusta |
+| `stre.png` | Opuntia streptacantha |
+| `pros.png` | Prosopis laevigata |
+| `yucc.png` | Yucca filifera |
 
 ### Estructura
 
 ```
 web/
   index.html            sitio listo para abrir (generado)
+  img/                  ilustraciones de cada especie
   build.py              une src/ + data/ en index.html
   shp_a_js.py           convierte el shapefile a data/poligonos_utm.js (pyshp)
   src/app.html          maquetación y estilos
