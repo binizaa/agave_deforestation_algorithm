@@ -6,7 +6,7 @@ Sitio web para visualizar los 31 polígonos del proyecto CONAFOR (196 ha, WGS 84
 
 - Abrir `web/index.html` en el navegador, o publicarlo con cualquier servidor estático (por ejemplo GitHub Pages). No requiere instalación: Leaflet se carga desde cdnjs.
 - Fondo satelital (Esri), de calles (OpenStreetMap) o sin fondo, con barra de escala métrica.
-- Botones "Por plantas" y "Por polígonos" sobre el mapa: el primero dibuja cada planta; el segundo colorea cada polígono y al tocarlo muestra su resumen (superficie, plantas, densidad y conteo por especie).
+- Botones "Por plantas" y "Por polígonos" sobre el mapa: el primero dibuja cada planta con la ilustración de su especie; el segundo, con un hexágono del color de su especie (como en el diseño original). La elección se recuerda en el navegador.
 - Clic en un polígono para seleccionarlo; "Detalle 80 × 80 m" reproduce la vista de detalle del diseño.
 - Al acercarse, cada planta es un hexágono del color de su especie; al tocarla se abre su ficha (especie, polígono, hilera, coordenadas UTM y geográficas). Las plantas con posición cambiada llevan un círculo.
 

@@ -204,18 +204,6 @@ code { font-family: var(--f-mono); font-size: 12px; }
 #modo button[aria-checked="true"] { background: var(--sel); color: var(--sel-ink); }
 #modo button[aria-checked="true"] .ms { color: var(--sel-ink); }
 #modo button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.pol-swatch { width: 18px; height: 18px; border-radius: 4px; background: var(--c); flex: none; }
-.ficha-pol { font-style: normal; }
-.ico-mini { width: 22px; height: 22px; object-fit: contain; flex: none; }
-.ficha-esp { list-style: none; margin: 12px 0 0; padding: 10px 0 0; border-top: 1px solid var(--line); display: grid; gap: 4px; }
-.ficha-esp li { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; column-gap: 8px; position: relative; padding-bottom: 4px; font-size: 12.5px; }
-.ficha-esp b { font: 400 12px var(--f-mono); color: var(--muted); }
-.ficha-esp i { position: absolute; left: 30px; bottom: 0; height: 2px; background: var(--accent); opacity: .5; border-radius: 1px; }
-.ficha-esp i { width: calc(var(--w) * 0.85); }
-.ficha-btn { all: unset; margin-top: 12px; display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border-radius: 16px; border: 1px solid var(--line-2); color: var(--accent); font: 500 13px var(--f-ui); cursor: pointer; }
-.ficha-btn:hover { background: var(--hover); }
-.ficha-btn:focus-visible { outline: 2px solid var(--accent); }
-body[data-modo="pol"] .etq span { font-size: 15px; }
 
 @media (max-width: 760px) {
   .app { grid-template-columns: 1fr; grid-template-rows: 1fr; }
@@ -322,9 +310,9 @@ body[data-modo="pol"] .etq span { font-size: 15px; }
 
   <main class="mapa-wrap">
     <div id="mapa" aria-label="Mapa de los polígonos de siembra"></div>
-    <div id="modo" role="radiogroup" aria-label="Ver el mapa por">
+    <div id="modo" role="radiogroup" aria-label="Dibujar las plantas como">
       <button type="button" role="radio" data-m="plantas" aria-checked="true"><span class="ms">park</span>Por plantas</button>
-      <button type="button" role="radio" data-m="pol" aria-checked="false"><span class="ms">pentagon</span>Por polígonos</button>
+      <button type="button" role="radio" data-m="pol" aria-checked="false"><span class="ms">hexagon</span>Por polígonos</button>
     </div>
     <div class="barra-inf"><span id="coords">Mueve el cursor sobre el mapa</span></div>
   </main>
