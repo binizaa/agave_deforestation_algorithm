@@ -393,11 +393,13 @@
         <label class="esp" for="esp-${e.id}">
           <input type="checkbox" id="esp-${e.id}" data-s="${s}" ${visibles[s] ? "checked" : ""}>
           <span class="hex" style="--c:${e.color}"></span>
-          <span class="esp-nom${e.id === "vaci" ? "" : " cursiva"}">${e.nombre}</span>
-          <span class="esp-n">${fmt(t[s])}</span>
-          <span class="barra" style="--w:${(t[s] / total * 100).toFixed(1)}%;--c:${e.color}"></span>
+          <span class="esp-txt">
+            <span class="esp-nom${e.id === "vaci" ? "" : " cursiva"}">${e.nombre}</span>
+            <span class="esp-sub">${fmt(t[s])} · ${(t[s] / total * 100).toFixed(1)} %</span>
+          </span>
         </label>
       </li>`).join("");
+    pintarBotonTodas();
     const plantas = t.reduce((a, b) => a + b, 0) - t[ESPECIES.length - 1];
     const ha = seleccion == null ? AREA_TOTAL : POLIS.find(p => p.p === seleccion).ha;
     $("#kpi-plantas").textContent = fmt(plantas);
@@ -434,7 +436,55 @@
   $("#todas").addEventListener("click", () => {
     const todas = visibles.every(Boolean);
     visibles.fill(!todas); pintarLeyenda(); capaPlantas.redraw();
-    $("#todas").textContent = todas ? "Mostrar todas" : "Ocultar todas";
+  });
+  function pintarBotonTodas() {
+    const todas = visibles.every(Boolean);
+    $("#todas .ms").textContent = todas ? "visibility_off" : "visibility";
+    $("#todas-txt").textContent = todas ? "Ocultar" : "Mostrar";
+  }
+
+  // Pestañas del panel
+  function abrirPestana(id) {
+    document.querySelectorAll('[role="tab"]').forEach(t => {
+      const on = t.dataset.tab === id;
+      t.setAttribute("aria-selected", on); t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+    });
+  }
+  document.querySelectorAll('[role="tab"]').forEach(t => t.addEventListener("click", () => abrirPestana(t.dataset.tab)));
+
+  // Buscador: número de polígono o nombre de especie
+  const buscador = $("#buscar"), sugerencias = $("#sugerencias");
+  function sugerir() {
+    const q = buscador.value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    $("#buscar-limpiar").hidden = !q;
+    if (!q) { sugerencias.hidden = true; return; }
+    const num = q.replace(/^(poligono|pol)\s*/, "");
+    const pols = POLIS.filter(p => String(p.p).startsWith(num) && /^\d+$/.test(num)).slice(0, 5);
+    const esps = ESPECIES.map((e, s) => ({ e, s })).filter(({ e }) => e.nombre.toLowerCase().includes(q)).slice(0, 6);
+    const items = [
+      ...pols.map(p => `<li><button type="button" data-p="${p.p}"><span class="ms">location_on</span><span><b>Polígono ${p.p}</b><small>${fmt(p.ha, 2)} ha</small></span></button></li>`),
+      ...esps.map(({ e, s }) => `<li><button type="button" data-s="${s}"><span class="hex" style="--c:${e.color}"></span><span><b class="${e.id === "vaci" ? "" : "cursiva"}">${e.nombre}</b><small>Mostrar solo esta especie</small></span></button></li>`),
+    ];
+    sugerencias.innerHTML = items.length ? items.join("") : `<li class="vacio">Sin resultados para «${buscador.value.trim()}»</li>`;
+    sugerencias.hidden = false;
+  }
+  function elegirSugerencia(b) {
+    if (b.dataset.p) { seleccionar(+b.dataset.p); abrirPestana("pol"); buscador.value = `Polígono ${b.dataset.p}`; }
+    else { const s = +b.dataset.s; visibles.fill(false); visibles[s] = true; pintarLeyenda(); capaPlantas.redraw(); abrirPestana("esp"); buscador.value = ESPECIES[s].nombre; }
+    sugerencias.hidden = true; $("#buscar-limpiar").hidden = false;
+  }
+  buscador.addEventListener("input", sugerir);
+  buscador.addEventListener("focus", () => { if (buscador.value.trim()) sugerir(); });
+  buscador.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { const b = sugerencias.querySelector("button"); if (b) elegirSugerencia(b); }
+    if (e.key === "Escape") sugerencias.hidden = true;
+  });
+  sugerencias.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) elegirSugerencia(b); });
+  document.addEventListener("click", (e) => { if (!e.target.closest(".busqueda")) sugerencias.hidden = true; });
+  $("#buscar-limpiar").addEventListener("click", () => {
+    buscador.value = ""; sugerencias.hidden = true; $("#buscar-limpiar").hidden = true;
+    visibles.fill(true); pintarLeyenda(); capaPlantas.redraw(); buscador.focus();
   });
   $("#poligonos").addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
