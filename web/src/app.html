@@ -159,6 +159,19 @@ code { font-family: var(--f-mono); font-size: 12px; }
 #csv-msg[data-tipo="error"] { color: var(--warn); }
 #csv-msg[data-tipo="ok"] { color: var(--accent); }
 #csv-msg:empty { display: none; }
+#reporte-form { display: grid; gap: 12px; margin-top: 12px; }
+#reporte-form label { display: grid; gap: 5px; font-size: 13px; }
+#reporte-form select, #reporte-form textarea { box-sizing: border-box; width: 100%; border: 1px solid var(--line-2); border-radius: 8px; padding: 9px 10px; background: var(--panel); color: var(--fg); font: 400 14px var(--f-ui); }
+#reporte-form textarea { min-height: 76px; resize: vertical; }
+#reporte-form [hidden] { display: none !important; }
+#reporte-objetivo { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+#reporte-msg[data-tipo="error"] { color: var(--warn); }
+#reporte-msg[data-tipo="ok"] { color: var(--accent); }
+#reporte-msg:empty { display: none; }
+#lista-reportes { list-style: none; margin: 8px 0 0; padding: 0; }
+#lista-reportes li { padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13px; line-height: 1.45; }
+#lista-reportes small { display: block; color: var(--muted); }
+#reporte-form button[type="submit"] { justify-self: start; }
 
 /* Mapa */
 .mapa-wrap { position: relative; min-width: 0; }
@@ -261,6 +274,7 @@ code { font-family: var(--f-mono); font-size: 12px; }
         <button type="button" role="tab" id="tab-esp" data-tab="esp" aria-controls="panel-esp" aria-selected="true">Especies</button>
         <button type="button" role="tab" id="tab-pol" data-tab="pol" aria-controls="panel-pol" aria-selected="false" tabindex="-1">Polígonos</button>
         <button type="button" role="tab" id="tab-cap" data-tab="cap" aria-controls="panel-cap" aria-selected="false" tabindex="-1">Capas</button>
+        <button type="button" role="tab" id="tab-rep" data-tab="rep" aria-controls="panel-rep" aria-selected="false" tabindex="-1">Reportes</button>
         <!-- Pestaña Datos (carga de CSV) oculta por ahora: quita "hidden" para mostrarla -->
         <button type="button" role="tab" id="tab-dat" data-tab="dat" aria-controls="panel-dat" aria-selected="false" tabindex="-1" hidden>Datos</button>
       </div>
@@ -284,6 +298,39 @@ code { font-family: var(--f-mono); font-size: 12px; }
           <button type="button" data-f="no" aria-pressed="false"><span class="mini no"></span>Sin fondo</button>
         </div>
         <p class="nota" id="aviso-fondo" hidden><span class="ms">cloud_off</span><span>El fondo no se pudo cargar aquí. Funciona al abrir el sitio con acceso a internet.</span></p>
+      </section>
+
+      <section class="tabpanel pad" id="panel-rep" role="tabpanel" aria-labelledby="tab-rep" hidden>
+        <h2>Reportar una planta</h2>
+        <p id="reporte-objetivo">Selecciona una planta en el mapa y pulsa «Reportar» para iniciar.</p>
+        <form id="reporte-form" hidden>
+          <label for="hallazgo">¿Qué encontraste en este espacio?
+            <select id="hallazgo" required>
+              <option value="corresponde">La planta corresponde a la especie indicada</option>
+              <option value="otra">Hay una planta de otra especie</option>
+              <option value="vacio">El espacio está vacío</option>
+            </select>
+          </label>
+          <label id="reporte-especie-wrap" for="reporte-especie" hidden>Especie encontrada
+            <select id="reporte-especie"></select>
+          </label>
+          <label id="reporte-salud-wrap" for="reporte-salud">Condición de la planta
+            <select id="reporte-salud">
+              <option value="sana">Sana</option>
+              <option value="regular">Condición regular</option>
+              <option value="mala">Mala salud</option>
+              <option value="muerta">Muerta</option>
+            </select>
+          </label>
+          <label for="reporte-notas">Notas (opcional)
+            <textarea id="reporte-notas" maxlength="1000" placeholder="Describe lo observado"></textarea>
+          </label>
+          <button class="btn-pildora" type="submit"><span class="ms">save</span>Guardar reporte</button>
+        </form>
+        <p class="nota" id="reporte-msg" aria-live="polite"></p>
+        <h2><span>Reportes guardados <span id="reporte-total">0</span></span></h2>
+        <div class="fila-btn"><button class="btn-pildora" id="descargar-reportes" type="button" disabled><span class="ms">download</span>Descargar CSV</button></div>
+        <ul id="lista-reportes"></ul>
       </section>
 
       <section class="tabpanel pad" id="panel-dat" role="tabpanel" aria-labelledby="tab-dat" hidden>

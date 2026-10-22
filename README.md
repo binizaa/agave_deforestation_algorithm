@@ -9,6 +9,7 @@ Sitio web para visualizar los 31 polígonos del proyecto CONAFOR (196 ha, WGS 84
 - Botones "Por plantas" y "Por polígonos" sobre el mapa: el primero dibuja cada planta con la ilustración de su especie; el segundo, con un hexágono del color de su especie (como en el diseño original). La elección se recuerda en el navegador.
 - Clic en un polígono para seleccionarlo; "Detalle 80 × 80 m" reproduce la vista de detalle del diseño.
 - Al acercarse, cada planta es un hexágono del color de su especie; al tocarla se abre su ficha (especie, polígono, hilera, coordenadas UTM y geográficas). Las plantas con posición cambiada llevan un círculo.
+- En la ficha, "Reportar" abre un formulario para indicar si la planta coincide, es de otra especie o el espacio está vacío, además de su condición de salud. Los reportes se guardan en el navegador y pueden descargarse como CSV desde la pestaña "Reportes".
 
 ### Datos de plantas
 

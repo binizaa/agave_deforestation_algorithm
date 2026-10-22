@@ -402,7 +402,7 @@
     if (mejor < 0) return false;
     const k = mejor, sp = ESPECIES[P.esp[k]];
     const fila = P.hil[k] >= 0 ? `<div><dt>Hilera / posición</dt><dd>${P.hil[k]} / ${P.pos[k]}</dd></div>` : "";
-    L.popup({ className: "ficha", offset: [0, -4], maxWidth: 260 })
+    const popup = L.popup({ className: "ficha", offset: [0, -4], maxWidth: 280 })
       .setLatLng([P.lat[k], P.lng[k]])
       .setContent(`<div class="ficha-cab">${icono(P.esp[k], "ico-ficha")}<strong>${sp.nombre}</strong></div>
         <dl>
@@ -412,14 +412,163 @@
           <div><dt>UTM 14N</dt><dd>${fmt(P.E[k], 1)} E<br>${fmt(P.N[k], 1)} N</dd></div>
           <div><dt>Geográficas</dt><dd>${P.lat[k].toFixed(6)}, ${P.lng[k].toFixed(6)}</dd></div>
         </dl>
-        ${P.cam[k] ? '<p class="ficha-nota">Posición cambiada</p>' : ""}`)
-      .openOn(map);
+        ${P.cam[k] ? '<p class="ficha-nota">Posición cambiada</p>' : ""}
+        <button class="btn-pildora" type="button" data-report-plant="${k}"><span class="ms">flag</span>Reportar</button>`)
+    map.once("popupopen", (evento) => {
+      if (evento.popup !== popup) return;
+      popup.getElement().querySelector("[data-report-plant]")?.addEventListener("click", () => {
+        map.closePopup(popup);
+        abrirReporte(k);
+      });
+    });
+    popup.openOn(map);
     return true;
   }
 
   // ---------- Interfaz ----------
   const fmt = (v, d = 0) => v.toLocaleString("es-MX", { minimumFractionDigits: d, maximumFractionDigits: d });
   const $ = (s) => document.querySelector(s);
+  const CLAVE_REPORTES = "reportes-siembra-v1";
+  const etiquetasHallazgo = { corresponde: "Coincide con la especie indicada", otra: "Otra especie", vacio: "Espacio vacío" };
+  const etiquetasSalud = { sana: "Sana", regular: "Condición regular", mala: "Mala salud", muerta: "Muerta" };
+  let reportes = [];
+  let plantaReportada = null;
+
+  function mostrarMensajeReporte(mensaje, tipo = "") {
+    const el = $("#reporte-msg");
+    el.textContent = mensaje;
+    el.dataset.tipo = tipo;
+  }
+
+  function renderizarReportes() {
+    $("#reporte-total").textContent = fmt(reportes.length);
+    $("#descargar-reportes").disabled = reportes.length === 0;
+    const lista = $("#lista-reportes");
+    lista.replaceChildren();
+    for (const reporte of [...reportes].reverse()) {
+      const item = document.createElement("li");
+      const titulo = document.createElement("strong");
+      const nombre = reporte.hallazgo === "otra"
+        ? reporte.especieObservada
+        : etiquetasHallazgo[reporte.hallazgo];
+      titulo.textContent = `Planta #${reporte.planta} · ${nombre}`;
+      const detalle = document.createElement("small");
+      const salud = reporte.salud ? ` · ${etiquetasSalud[reporte.salud]}` : "";
+      detalle.textContent = `Polígono ${reporte.poligono || "—"} · ${new Date(reporte.fecha).toLocaleString("es-MX")}${salud}`;
+      item.append(titulo, detalle);
+      if (reporte.notas) {
+        const notas = document.createElement("small");
+        notas.textContent = reporte.notas;
+        item.append(notas);
+      }
+      lista.append(item);
+    }
+  }
+
+  function cargarReportes() {
+    try {
+      const guardados = localStorage.getItem(CLAVE_REPORTES);
+      if (guardados) {
+        const datos = JSON.parse(guardados);
+        if (!Array.isArray(datos)) throw new Error("El contenido guardado no es una lista.");
+        reportes = datos;
+      }
+    } catch (error) {
+      mostrarMensajeReporte(`No se pudieron leer los reportes guardados: ${error.message}`, "error");
+    }
+    renderizarReportes();
+  }
+
+  function actualizarCamposReporte() {
+    const vacio = $("#hallazgo").value === "vacio";
+    $("#reporte-especie-wrap").hidden = $("#hallazgo").value !== "otra";
+    $("#reporte-especie").required = $("#hallazgo").value === "otra";
+    $("#reporte-salud-wrap").hidden = vacio;
+    $("#reporte-salud").required = !vacio;
+  }
+
+  function abrirReporte(indice) {
+    if (!Number.isInteger(indice) || indice < 0 || indice >= P.n) return;
+    plantaReportada = indice;
+    $("#reporte-form").hidden = false;
+    $("#reporte-form").reset();
+    $("#reporte-especie").innerHTML = ESPECIES
+      .filter((especie, especieIndice) => especie.id !== "vaci" && especieIndice !== P.esp[indice])
+      .map(especie => `<option value="${especie.id}">${especie.nombre}</option>`).join("");
+    $("#reporte-objetivo").textContent =
+      `Planta #${indice + 1} · ${ESPECIES[P.esp[indice]].nombre} · polígono ${P.pol[indice] || "—"} · UTM ${fmt(P.E[indice], 1)} E, ${fmt(P.N[indice], 1)} N`;
+    actualizarCamposReporte();
+    mostrarMensajeReporte("");
+    abrirPestana("rep");
+    if (window.matchMedia("(max-width: 760px)").matches) {
+      document.body.classList.add("panel-abierto");
+      $("#panel-toggle").setAttribute("aria-expanded", "true");
+    }
+  }
+
+  function escaparCSV(valor) {
+    return `"${String(valor ?? "").replace(/"/g, '""')}"`;
+  }
+
+  $("#hallazgo").addEventListener("change", actualizarCamposReporte);
+  $("#reporte-form").addEventListener("submit", (evento) => {
+    evento.preventDefault();
+    if (plantaReportada == null) {
+      mostrarMensajeReporte("Selecciona una planta antes de guardar el reporte.", "error");
+      return;
+    }
+    const hallazgo = $("#hallazgo").value;
+    const especieObservada = hallazgo === "otra" ? $("#reporte-especie").value : "";
+    const salud = hallazgo === "vacio" ? "" : $("#reporte-salud").value;
+    if (!(hallazgo in etiquetasHallazgo) || (hallazgo === "otra" && !ESPECIES.some(e => e.id === especieObservada && e.id !== "vaci"))
+      || (salud && !(salud in etiquetasSalud))) {
+      mostrarMensajeReporte("Revisa el hallazgo, la especie y la condición seleccionados.", "error");
+      return;
+    }
+    const registro = {
+      fecha: new Date().toISOString(),
+      planta: plantaReportada + 1,
+      poligono: P.pol[plantaReportada],
+      este: P.E[plantaReportada],
+      norte: P.N[plantaReportada],
+      especiePlaneada: ESPECIES[P.esp[plantaReportada]].nombre,
+      hallazgo,
+      especieObservada: hallazgo === "otra" ? ESPECIES.find(e => e.id === especieObservada).nombre : "",
+      salud,
+      notas: $("#reporte-notas").value.trim(),
+    };
+    const nuevos = [...reportes, registro];
+    try {
+      localStorage.setItem(CLAVE_REPORTES, JSON.stringify(nuevos));
+    } catch (error) {
+      mostrarMensajeReporte(`No se pudo guardar el reporte en este navegador: ${error.message}`, "error");
+      return;
+    }
+    reportes = nuevos;
+    renderizarReportes();
+    mostrarMensajeReporte("Reporte guardado en este navegador.", "ok");
+  });
+  $("#descargar-reportes").addEventListener("click", () => {
+    if (!reportes.length) return;
+    const filas = [
+      ["fecha", "planta", "poligono", "este_utm", "norte_utm", "especie_planeada", "hallazgo", "especie_observada", "salud", "notas"],
+      ...reportes.map(reporte => [
+        reporte.fecha, reporte.planta, reporte.poligono, reporte.este, reporte.norte,
+        reporte.especiePlaneada, etiquetasHallazgo[reporte.hallazgo] || reporte.hallazgo,
+        reporte.especieObservada, etiquetasSalud[reporte.salud] || "", reporte.notas,
+      ]),
+    ];
+    const csv = "\uFEFF" + filas.map(fila => fila.map(escaparCSV).join(",")).join("\r\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const enlace = document.createElement("a");
+    enlace.href = url;
+    enlace.download = "reportes-siembra.csv";
+    document.body.append(enlace);
+    enlace.click();
+    enlace.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+  cargarReportes();
 
   function totalesEspecie(pol) {
     const t = new Uint32Array(ESPECIES.length);
