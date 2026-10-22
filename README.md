@@ -12,7 +12,9 @@ Sitio web para visualizar los 31 polígonos del proyecto CONAFOR (196 ha, WGS 84
 
 ### Datos de plantas
 
-Por ahora la distribución es **simulada**: tresbolillo de 8 m en hilera y 2 m entre hileras (625 plantas/ha), con especies asignadas al azar de forma determinista. La carga de un CSV con los datos reales ya está programada pero oculta; para mostrarla, quita `hidden` del botón `tab-dat` en `web/src/app.html` y ejecuta `python3 web/build.py`. Columnas del CSV:
+Al ejecutar `python3 web/build.py`, si existe `web/data/shapefile/mapa_siembra.gpkg`, el sitio incorpora sus puntos reales (coordenadas UTM, especie, polígono, hilera y columna). Cada punto se asocia con la ilustración homónima de `web/img/`; al acercar el zoom, se dibuja la imagen correspondiente y al tocar una planta se muestra su ficha. El GeoPackage debe tener una capa `puntos` en EPSG:32614. Las imágenes y los datos se incrustan en `web/index.html`, que sigue funcionando como archivo independiente. Si el GeoPackage no está disponible, se conserva la distribución simulada como demostración.
+
+La carga de un CSV con otros datos reales también está programada pero oculta; para mostrarla, quita `hidden` del botón `tab-dat` en `web/src/app.html` y ejecuta `python3 web/build.py`. Columnas del CSV:
 
 | columna | obligatoria | ejemplo |
 |---|---|---|
@@ -49,7 +51,7 @@ web/
   src/app.html          maquetación y estilos
   src/app.js            mapa, proyección UTM, generación y dibujo de plantas
   src/leaflet.css       estilos de Leaflet 1.9.4
-  data/shapefile/       MapaCONAFOR.* (original)
+  data/shapefile/       MapaCONAFOR.* y mapa_siembra.gpkg (datos de plantas)
   data/poligonos.geojson  polígonos en WGS 84
   data/poligonos_utm.js   polígonos en UTM usados por el sitio
 ```

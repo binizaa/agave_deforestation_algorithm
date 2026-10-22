@@ -14,16 +14,16 @@
   // `img`: ruta a la imagen de la especie (png/svg con fondo transparente). Con null se dibuja
   // un hexágono de su color. `color` se usa en la vista lejana, donde cada planta es un punto.
   const ESPECIES = [
-    { id: "lech", nombre: "Agave lechuguilla",        color: "#1f77b4", peso: 7,  img: "img/lech.png" },
-    { id: "salm", nombre: "Agave salmiana",           color: "#ff7f0e", peso: 24, img: "img/salm.png" },
-    { id: "scab", nombre: "Agave scabra",             color: "#2ca02c", peso: 7,  img: "img/scab.png" },
-    { id: "stri", nombre: "Agave striata",            color: "#d62728", peso: 6,  img: "img/stri.png" },
-    { id: "cant", nombre: "Opuntia cantabrigiensis",  color: "#9467bd", peso: 7,  img: "img/cant.png" },
-    { id: "enge", nombre: "Opuntia engelmannii",      color: "#8c564b", peso: 6,  img: "img/enge.png" },
-    { id: "robu", nombre: "Opuntia robusta",          color: "#e377c2", peso: 10, img: "img/robu.png" },
-    { id: "stre", nombre: "Opuntia streptacantha",    color: "#7f7f7f", peso: 10, img: "img/stre.png" },
-    { id: "pros", nombre: "Prosopis laevigata",       color: "#bcbd22", peso: 12, img: "img/pros.png" },
-    { id: "yucc", nombre: "Yucca filifera",           color: "#17becf", peso: 4,  img: "img/yucc.png" },
+    { id: "lech", nombre: "Agave lechuguilla",        color: "#8fc80c", peso: 7,  img: "img/lech.png" },
+    { id: "salm", nombre: "Agave salmiana",           color: "#00dc7f", peso: 24, img: "img/salm.png" },
+    { id: "scab", nombre: "Agave scabra",             color: "#0073ac", peso: 7,  img: "img/scab.png" },
+    { id: "stri", nombre: "Agave striata",            color: "#ffed49", peso: 6,  img: "img/stri.png" },
+    { id: "cant", nombre: "Opuntia cantabrigiensis",  color: "#10b509", peso: 7,  img: "img/cant.png" },
+    { id: "enge", nombre: "Opuntia engelmannii",      color: "#6f44eb", peso: 6,  img: "img/enge.png" },
+    { id: "robu", nombre: "Opuntia robusta",          color: "#37ffd6", peso: 10, img: "img/robu.png" },
+    { id: "stre", nombre: "Opuntia streptacantha",    color: "#00ac98", peso: 10, img: "img/stre.png" },
+    { id: "pros", nombre: "Prosopis laevigata",       color: "#ffa730", peso: 12, img: "img/pros.png" },
+    { id: "yucc", nombre: "Yucca filifera",           color: "#ff5cab", peso: 4,  img: "img/yucc.png" },
     { id: "vaci", nombre: "vacío",                    color: "#d9d6cf", peso: 2,  img: null },
   ];
   const TASA_CAMBIADA = 0.003; // solo para la distribución simulada
@@ -151,9 +151,13 @@
     };
     for (let k = 0; k < n; k++) {
       const o = lista[k];
-      st.E[k] = o.E; st.N[k] = o.N; st.esp[k] = o.esp; st.pol[k] = o.pol || 0; st.cam[k] = o.cambiada ? 1 : 0;
-      st.hil[k] = o.hilera ?? -1; st.pos[k] = o.pos ?? -1;
-      const [la, lo] = utmALatLng(o.E, o.N); st.lat[k] = la; st.lng[k] = lo;
+      const E = Array.isArray(o) ? o[0] : o.E, N = Array.isArray(o) ? o[1] : o.N;
+      st.E[k] = E; st.N[k] = N; st.esp[k] = Array.isArray(o) ? o[2] : o.esp;
+      st.pol[k] = (Array.isArray(o) ? o[3] : o.pol) || 0;
+      st.cam[k] = (Array.isArray(o) ? o[6] : o.cambiada) ? 1 : 0;
+      st.hil[k] = Array.isArray(o) ? o[4] : (o.hilera ?? -1);
+      st.pos[k] = Array.isArray(o) ? o[5] : (o.pos ?? -1);
+      const [la, lo] = utmALatLng(E, N); st.lat[k] = la; st.lng[k] = lo;
     }
     st.idx = construirIndice(n, st.E, st.N);
     st.porPol = new Map();
@@ -310,15 +314,42 @@
       const sel = seleccion;
       const cambiadas = [];
       const grupos = ESPECIES.map(() => []);
+      const pixeles = modo === "pixel" ? new Map() : null;
       porRango(e0, n0, e1, n1, (k) => {
         const s = P.esp[k]; if (!visibles[s]) return;
         const pt = map.project([P.lat[k], P.lng[k]], z);
         const x = pt.x - origen.x, y = pt.y - origen.y;
         const m = r * 1.6 + 2;
         if (x < -m || y < -m || x > ts.x + m || y > ts.y + m) return;
-        grupos[s].push(x, y, sel != null && P.pol[k] !== sel ? 1 : 0);
+        const atenuado = sel != null && P.pol[k] !== sel;
+        if (pixeles) {
+          if (x < 0 || y < 0 || x >= ts.x || y >= ts.y) return;
+          const pixel = Math.floor(y * dpr) * t.width + Math.floor(x * dpr);
+          const muestra = pixeles.get(pixel);
+          if (!muestra) pixeles.set(pixel, { cantidad: 1, especie: s, atenuado });
+          else {
+            muestra.cantidad++;
+            if (hash(k, pixel, muestra.cantidad) < 1 / muestra.cantidad) {
+              muestra.especie = s; muestra.atenuado = atenuado;
+            }
+          }
+        } else grupos[s].push(x, y, atenuado ? 1 : 0);
         if (P.cam[k]) cambiadas.push(x, y);
       });
+
+      if (pixeles) {
+        const imagen = ctx.createImageData(t.width, t.height), datos = imagen.data;
+        for (const [pixel, muestra] of pixeles) {
+          const color = ESPECIES[muestra.especie].color;
+          const q = pixel * 4;
+          datos[q] = parseInt(color.slice(1, 3), 16);
+          datos[q + 1] = parseInt(color.slice(3, 5), 16);
+          datos[q + 2] = parseInt(color.slice(5, 7), 16);
+          datos[q + 3] = muestra.atenuado ? 72 : 255;
+        }
+        ctx.putImageData(imagen, 0, 0);
+        return t;
+      }
 
       for (let s = 0; s < ESPECIES.length; s++) {
         const g = grupos[s]; if (!g.length) continue;
@@ -582,7 +613,8 @@
   });
 
   // ---------- Arranque ----------
-  generarSimulada();
+  if (window.PLANTAS_REALES) cargarPlantas(window.PLANTAS_REALES, "mapa_siembra.gpkg");
+  else generarSimulada();
   capaPlantas.addTo(map);
   let sim = "plantas"; try { sim = localStorage.getItem("simbolo") || "plantas"; } catch (e) {}
   ponerModo(sim === "pol" ? "pol" : "plantas");
@@ -590,7 +622,10 @@
   let fondo = "sat"; try { fondo = localStorage.getItem("fondo") || "sat"; } catch (e) {}
   ponerFondo(FONDOS.hasOwnProperty(fondo) ? fondo : "sat");
   $("#kpi-pol").textContent = POLIS.length;
-  $("#marco").textContent = `${MARCO.enHilera} m en hilera · ${MARCO.entreHileras} m entre hileras · tresbolillo`;
+  $("#marco").textContent = P.fuente === "simulada"
+    ? `${MARCO.enHilera} m en hilera · ${MARCO.entreHileras} m entre hileras · tresbolillo`
+    : "Acomodo y coordenadas del GeoPackage";
+  $("#marco").nextElementSibling.textContent = P.fuente === "simulada" ? "marco de plantación" : "fuente de posiciones";
   pintarPoligonos(); pintarLeyenda();
   map.fire("zoomend");
 })();
