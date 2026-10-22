@@ -88,7 +88,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
 .chip-estado[data-tipo="real"] { background: var(--accent-soft); color: var(--accent-ink); }
 
 /* Acciones circulares */
-.acciones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding-block: 16px 18px; border-bottom: 1px solid var(--line); }
+.acciones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding-block: 16px 18px; border-bottom: 1px solid var(--line); }
 .accion { all: unset; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; text-align: center; }
 .accion .circ { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line-2); color: var(--accent); background: var(--panel); transition: background .15s; }
 .accion.prim .circ { background: var(--accent); color: var(--accent-on); border-color: var(--accent); }
@@ -250,15 +250,12 @@ code { font-family: var(--f-mono); font-size: 12px; }
     <div class="cuerpo">
       <header class="lugar pad">
         <h1>Mapa de siembra de los 31 polígonos</h1>
-        <p class="sub">Proyecto de restauración CONAFOR</p>
-        <div class="meta"><strong id="ambito">Todo el predio</strong><span aria-hidden="true">·</span><span id="fuente" class="chip-estado"></span></div>
       </header>
 
       <div class="acciones pad">
         <button class="accion prim" id="btn-detalle" type="button"><span class="circ"><span class="ms">crop_free</span></span><span>Detalle 80 m</span></button>
         <button class="accion" id="btn-todo" type="button"><span class="circ"><span class="ms">zoom_out_map</span></span><span>Todo el predio</span></button>
         <button class="accion" id="todas" type="button"><span class="circ"><span class="ms">visibility_off</span></span><span id="todas-txt">Ocultar</span></button>
-        <label class="accion" for="csv"><span class="circ"><span class="ms">upload_file</span></span><span>Cargar CSV</span><input type="file" id="csv" accept=".csv,.txt,text/csv"></label>
       </div>
 
       <ul class="info pad">
@@ -272,7 +269,8 @@ code { font-family: var(--f-mono); font-size: 12px; }
         <button type="button" role="tab" id="tab-esp" data-tab="esp" aria-controls="panel-esp" aria-selected="true">Especies</button>
         <button type="button" role="tab" id="tab-pol" data-tab="pol" aria-controls="panel-pol" aria-selected="false" tabindex="-1">Polígonos</button>
         <button type="button" role="tab" id="tab-cap" data-tab="cap" aria-controls="panel-cap" aria-selected="false" tabindex="-1">Capas</button>
-        <button type="button" role="tab" id="tab-dat" data-tab="dat" aria-controls="panel-dat" aria-selected="false" tabindex="-1">Datos</button>
+        <!-- Pestaña Datos (carga de CSV) oculta por ahora: quita "hidden" para mostrarla -->
+        <button type="button" role="tab" id="tab-dat" data-tab="dat" aria-controls="panel-dat" aria-selected="false" tabindex="-1" hidden>Datos</button>
       </div>
 
       <section class="tabpanel pad" id="panel-esp" role="tabpanel" aria-labelledby="tab-esp">
@@ -299,7 +297,7 @@ code { font-family: var(--f-mono); font-size: 12px; }
       <section class="tabpanel pad" id="panel-dat" role="tabpanel" aria-labelledby="tab-dat" hidden>
         <h2>Datos de plantas</h2>
         <div class="fila-btn">
-          <label class="btn-pildora" for="csv"><span class="ms">upload_file</span>Cargar CSV</label>
+          <label class="btn-pildora" for="csv"><span class="ms">upload_file</span>Cargar CSV<input type="file" id="csv" accept=".csv,.txt,text/csv"></label>
           <button class="btn-pildora" id="volver-sim" type="button" hidden><span class="ms">restart_alt</span>Volver a la simulada</button>
         </div>
         <p class="nota" id="csv-msg" aria-live="polite"></p>
@@ -753,10 +751,7 @@ window.IMAGENES_INLINE = {"cant": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
     $("#kpi-plantas").textContent = fmt(plantas);
     $("#kpi-ha").textContent = fmt(ha, 2);
     $("#kpi-dens").textContent = fmt(plantas / ha);
-    $("#ambito").textContent = seleccion == null ? "Todo el predio" : `Polígono ${seleccion}`;
     $("#limpiar").hidden = seleccion == null;
-    $("#fuente").textContent = P && P.fuente === "simulada" ? "Distribución simulada" : `Datos cargados: ${P ? P.fuente : ""}`;
-    $("#fuente").dataset.tipo = P && P.fuente === "simulada" ? "sim" : "real";
   }
 
   function pintarPoligonos() {

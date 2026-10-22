@@ -12,7 +12,7 @@ Sitio web para visualizar los 31 polígonos del proyecto CONAFOR (196 ha, WGS 84
 
 ### Datos de plantas
 
-Por ahora la distribución es **simulada**: tresbolillo de 8 m en hilera y 2 m entre hileras (625 plantas/ha), con especies asignadas al azar de forma determinista. Para ver los datos reales usa "Cargar CSV de plantas" con estas columnas:
+Por ahora la distribución es **simulada**: tresbolillo de 8 m en hilera y 2 m entre hileras (625 plantas/ha), con especies asignadas al azar de forma determinista. La carga de un CSV con los datos reales ya está programada pero oculta; para mostrarla, quita `hidden` del botón `tab-dat` en `web/src/app.html` y ejecuta `python3 web/build.py`. Columnas del CSV:
 
 | columna | obligatoria | ejemplo |
 |---|---|---|

@@ -418,10 +418,7 @@
     $("#kpi-plantas").textContent = fmt(plantas);
     $("#kpi-ha").textContent = fmt(ha, 2);
     $("#kpi-dens").textContent = fmt(plantas / ha);
-    $("#ambito").textContent = seleccion == null ? "Todo el predio" : `Polígono ${seleccion}`;
     $("#limpiar").hidden = seleccion == null;
-    $("#fuente").textContent = P && P.fuente === "simulada" ? "Distribución simulada" : `Datos cargados: ${P ? P.fuente : ""}`;
-    $("#fuente").dataset.tipo = P && P.fuente === "simulada" ? "sim" : "real";
   }
 
   function pintarPoligonos() {
