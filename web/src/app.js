@@ -226,7 +226,10 @@
   const grupoPol = L.featureGroup().addTo(map);
   for (const p of POLIS) {
     const capa = L.polygon(p.ll, { className: "pol", weight: 1.4, color: "#2b2118", fillOpacity: 0, interactive: true });
-    capa.on("click", (ev) => { if (!clicEnPlanta(ev)) seleccionar(p.p, false); });
+    capa.on("click", (ev) => {
+      if (modo === "pol") { seleccionar(p.p, false); fichaPoligono(p, ev.latlng); return; }
+      if (!clicEnPlanta(ev)) seleccionar(p.p, false);
+    });
     capa.bindTooltip(`Polígono ${p.p} · ${p.ha.toFixed(2)} ha`, { sticky: true, className: "tip", direction: "top", offset: [0, -8] });
     capa.addTo(grupoPol);
     const [ex, ny] = puntoEtiqueta(p.ring);
@@ -427,11 +430,52 @@
       `<button type="button" data-p="${p.p}" aria-pressed="${seleccion === p.p}" title="${p.ha.toFixed(2)} ha">${p.p}</button>`).join("");
   }
 
+  // ---------- Modo de vista: por plantas o por polígonos ----------
+  let modo = "plantas";
+  const colorPol = (pid) => `hsl(${(pid * 137.508) % 360} 55% 52%)`; // tonos bien separados entre vecinos
+  function estiloPol(pid, on) {
+    const base = { weight: on ? 3 : 1.4, color: on ? "#fff4dc" : "#2b2118" };
+    return modo === "pol"
+      ? { ...base, fillColor: colorPol(pid), fillOpacity: on ? 0.75 : 0.5 }
+      : { ...base, fillOpacity: 0 };
+  }
+  function ponerModo(m) {
+    modo = m;
+    if (m === "plantas") capaPlantas.addTo(map); else map.removeLayer(capaPlantas);
+    for (const [pid, { capa }] of capasPol) capa.setStyle(estiloPol(pid, pid === seleccion));
+    document.querySelectorAll("#modo button").forEach(b => b.setAttribute("aria-checked", b.dataset.m === m));
+    document.body.dataset.modo = m;
+    map.closePopup();
+  }
+  function fichaPoligono(p, latlng) {
+    const t = P.porPol.get(p.p) || new Uint32Array(ESPECIES.length);
+    const plantas = t.reduce((a, b) => a + b, 0) - t[ESPECIES.length - 1];
+    const orden = [...t.keys()].filter(s => ESPECIES[s].id !== "vaci" && t[s]).sort((a, b) => t[b] - t[a]);
+    const max = t[orden[0]] || 1;
+    L.popup({ className: "ficha", maxWidth: 300, minWidth: 260 })
+      .setLatLng(latlng)
+      .setContent(`<div class="ficha-cab ficha-pol"><span class="pol-swatch" style="--c:${colorPol(p.p)}"></span><strong>Polígono ${p.p}</strong></div>
+        <dl>
+          <div><dt>Superficie</dt><dd>${fmt(p.ha, 2)} ha</dd></div>
+          <div><dt>Plantas</dt><dd>${fmt(plantas)}</dd></div>
+          <div><dt>Densidad</dt><dd>${fmt(plantas / p.ha)} plantas/ha</dd></div>
+          ${t[ESPECIES.length - 1] ? `<div><dt>Huecos</dt><dd>${fmt(t[ESPECIES.length - 1])}</dd></div>` : ""}
+        </dl>
+        <ul class="ficha-esp">${orden.map(s => `<li>${icono(s, "ico-mini")}<span class="cursiva">${ESPECIES[s].nombre}</span><b>${fmt(t[s])}</b><i style="--w:${(t[s] / max * 100).toFixed(0)}%"></i></li>`).join("")}</ul>
+        <button type="button" class="ficha-btn" data-ver="${p.p}">Ver sus plantas</button>`)
+      .openOn(map);
+  }
+  map.on("popupopen", (e) => {
+    const b = e.popup.getElement().querySelector("[data-ver]");
+    if (b) b.addEventListener("click", () => { const id = +b.dataset.ver; ponerModo("plantas"); seleccionar(id); });
+  });
+  document.querySelectorAll("#modo button").forEach(b => b.addEventListener("click", () => ponerModo(b.dataset.m)));
+
   function seleccionar(id, encuadrar = true) {
     seleccion = id;
     for (const [pid, { capa, et }] of capasPol) {
       const on = pid === id;
-      capa.setStyle({ weight: on ? 3 : 1.4, color: on ? "#fff4dc" : "#2b2118" });
+      capa.setStyle(estiloPol(pid, on));
       if (on) capa.bringToFront();
       et.getElement()?.classList.toggle("on", on);
     }
@@ -574,7 +618,7 @@
 
   // ---------- Arranque ----------
   generarSimulada();
-  capaPlantas.addTo(map);
+  ponerModo("plantas");
   map.fitBounds(grupoPol.getBounds(), { padding: [20, 20] });
   let fondo = "sat"; try { fondo = localStorage.getItem("fondo") || "sat"; } catch (e) {}
   ponerFondo(FONDOS.hasOwnProperty(fondo) ? fondo : "sat");
