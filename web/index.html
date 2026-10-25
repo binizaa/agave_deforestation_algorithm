@@ -179,6 +179,20 @@ code { font-family: var(--f-mono); font-size: 12px; }
 #lista-reportes small { display: block; color: var(--muted); }
 #reporte-form button[type="submit"] { justify-self: start; }
 
+/* Modelo */
+#modelo-desc { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.btn-pildora.prim { background: var(--accent); color: var(--accent-on); border-color: var(--accent); }
+.btn-pildora.prim:hover { background: color-mix(in srgb, var(--accent) 88%, var(--fg)); }
+.btn-pildora[disabled] { opacity: .5; cursor: default; pointer-events: none; }
+#modelo-avance { width: 100%; height: 6px; margin-top: 14px; accent-color: var(--accent); }
+#modelo-msg[data-tipo="error"], #modelo-problemas { color: var(--warn); }
+#modelo-msg[data-tipo="ok"] { color: var(--accent); }
+#modelo-msg:empty { display: none; }
+#modelo-problemas { font-size: 13px; line-height: 1.45; margin: 8px 0 0; padding-left: 20px; }
+#modelo-log-wrap { margin-top: 12px; font-size: 13px; color: var(--muted); }
+#modelo-log { max-height: 220px; overflow: auto; background: var(--hover); color: var(--fg); border-radius: 8px; padding: 8px 10px;
+  font: 400 11.5px/1.4 var(--f-mono); white-space: pre-wrap; word-break: break-word; }
+
 /* Mapa */
 .mapa-wrap { position: relative; min-width: 0; }
 #mapa { position: absolute; inset: 0; background: var(--suelo); }
@@ -283,6 +297,8 @@ code { font-family: var(--f-mono); font-size: 12px; }
         <button type="button" role="tab" id="tab-pol" data-tab="pol" aria-controls="panel-pol" aria-selected="false" tabindex="-1">Polígonos</button>
         <button type="button" role="tab" id="tab-cap" data-tab="cap" aria-controls="panel-cap" aria-selected="false" tabindex="-1">Capas</button>
         <button type="button" role="tab" id="tab-rep" data-tab="rep" aria-controls="panel-rep" aria-selected="false" tabindex="-1">Reportes</button>
+        <!-- Solo aparece cuando el sitio se abre desde web/servidor.py -->
+        <button type="button" role="tab" id="tab-mod" data-tab="mod" aria-controls="panel-mod" aria-selected="false" tabindex="-1" hidden>Modelo</button>
         <!-- Pestaña Datos (carga de CSV) oculta por ahora: quita "hidden" para mostrarla -->
         <button type="button" role="tab" id="tab-dat" data-tab="dat" aria-controls="panel-dat" aria-selected="false" tabindex="-1" hidden>Datos</button>
       </div>
@@ -339,6 +355,19 @@ code { font-family: var(--f-mono); font-size: 12px; }
         <h2><span>Reportes guardados <span id="reporte-total">0</span></span></h2>
         <div class="fila-btn"><button class="btn-pildora" id="descargar-reportes" type="button" disabled><span class="ms">download</span>Descargar CSV</button></div>
         <ul id="lista-reportes"></ul>
+      </section>
+
+      <section class="tabpanel pad" id="panel-mod" role="tabpanel" aria-labelledby="tab-mod" hidden>
+        <h2>Correr el modelo</h2>
+        <p id="modelo-desc">Ejecuta el notebook completo (compra, acomodo y mapa real) y vuelve a dibujar el sitio con el nuevo <code>mapa_siembra.gpkg</code>. Tarda varios minutos.</p>
+        <div class="fila-btn">
+          <button class="btn-pildora prim" id="modelo-correr" type="button"><span class="ms">play_arrow</span>Correr modelo</button>
+          <button class="btn-pildora" id="modelo-detener" type="button" hidden><span class="ms">stop</span>Detener</button>
+        </div>
+        <progress id="modelo-avance" max="1" value="0" hidden></progress>
+        <p class="nota" id="modelo-msg" aria-live="polite"></p>
+        <ul id="modelo-problemas" hidden></ul>
+        <details id="modelo-log-wrap" hidden><summary>Registro</summary><pre id="modelo-log"></pre></details>
       </section>
 
       <section class="tabpanel pad" id="panel-dat" role="tabpanel" aria-labelledby="tab-dat" hidden>
@@ -1141,6 +1170,79 @@ window.IMAGENES_INLINE = {"cant": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
     generarSimulada(); $("#volver-sim").hidden = true; $("#csv-msg").textContent = "";
     pintarLeyenda(); capaPlantas.redraw();
   });
+
+  // ---------- Correr el modelo (solo cuando el sitio se sirve con web/servidor.py) ----------
+  const API_MODELO = "api/modelo";
+  let vioCorrida = false, sondeo = null;
+  function duracion(seg) {
+    const m = Math.floor(seg / 60), s = Math.round(seg % 60);
+    return m ? `${m} min ${s} s` : `${s} s`;
+  }
+  function pintarModelo(st) {
+    const corriendo = st.estado === "corriendo", msg = $("#modelo-msg"), av = $("#modelo-avance");
+    $("#modelo-correr").disabled = corriendo;
+    $("#modelo-detener").hidden = !corriendo;
+    av.hidden = !corriendo;
+    if (st.total) { av.max = st.total; av.value = st.celda; } else av.removeAttribute("value");
+    if (corriendo) {
+      vioCorrida = true; $("#modelo-problemas").hidden = true;
+      msg.textContent = `${st.mensaje}${st.seccion ? " · " + st.seccion : ""} · ${duracion(st.ahora - st.inicio)}`;
+      msg.dataset.tipo = "";
+    } else if (st.estado === "inactivo") {
+      msg.textContent = "";
+    } else {
+      const cuando = st.fin ? ` · ${new Date(st.fin * 1000).toLocaleString("es-MX")} · ${duracion(st.fin - st.inicio)}` : "";
+      msg.textContent = st.mensaje + cuando;
+      msg.dataset.tipo = st.estado === "ok" ? "ok" : st.estado === "error" ? "error" : "";
+    }
+    const log = (st.log || []).join("\n");
+    $("#modelo-log-wrap").hidden = !log; $("#modelo-log").textContent = log;
+    // El sitio se regeneró: se recarga para leer el nuevo index.html (solo si la corrida se vio en esta página)
+    if (st.estado === "ok" && vioCorrida) { msg.textContent = "Listo. Recargando el mapa…"; setTimeout(() => location.reload(), 1200); }
+  }
+  async function consultarModelo() {
+    clearTimeout(sondeo);
+    try {
+      const r = await fetch(API_MODELO, { cache: "no-store" });
+      if (!r.ok) throw new Error(r.status);
+      const st = await r.json(); pintarModelo(st);
+      if (st.estado === "corriendo") sondeo = setTimeout(consultarModelo, 2000);
+      return st;
+    } catch (err) {
+      if (vioCorrida) {                                  // se perdió la conexión a media corrida: se reintenta
+        $("#modelo-msg").textContent = "Sin conexión con el servidor; reintentando…";
+        sondeo = setTimeout(consultarModelo, 5000);
+      }
+      throw err;
+    }
+  }
+  function mostrarProblemas(lista) {
+    const ul = $("#modelo-problemas"); ul.replaceChildren();
+    lista.forEach(p => { const li = document.createElement("li"); li.textContent = p; ul.append(li); });
+    ul.hidden = !lista.length;
+  }
+  $("#modelo-correr").addEventListener("click", async () => {
+    if (!confirm("Se correrá el modelo completo y el mapa se reemplazará con el resultado. Puede tardar varios minutos. ¿Continuar?")) return;
+    const msg = $("#modelo-msg"); mostrarProblemas([]);
+    $("#modelo-correr").disabled = true; msg.textContent = "Revisando datos y dependencias…"; msg.dataset.tipo = "";
+    try {
+      const r = await fetch(API_MODELO, { method: "POST" }), res = await r.json();
+      if (!r.ok) {
+        msg.textContent = res.error; msg.dataset.tipo = "error"; mostrarProblemas(res.problemas || []);
+        $("#modelo-correr").disabled = false; return;
+      }
+      vioCorrida = true; consultarModelo().catch(() => {});
+    } catch (err) {
+      msg.textContent = "No se pudo contactar al servidor."; msg.dataset.tipo = "error"; $("#modelo-correr").disabled = false;
+    }
+  });
+  $("#modelo-detener").addEventListener("click", async () => {
+    await fetch(API_MODELO + "/detener", { method: "POST" }).catch(() => {});
+    consultarModelo().catch(() => {});
+  });
+  if (location.protocol.startsWith("http")) {
+    consultarModelo().then(() => { $("#tab-mod").hidden = false; }).catch(() => {});
+  }
 
   // ---------- Arranque ----------
   if (window.PLANTAS_REALES) cargarPlantas(window.PLANTAS_REALES, "mapa_siembra.gpkg");

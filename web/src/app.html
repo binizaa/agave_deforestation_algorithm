@@ -173,6 +173,20 @@ code { font-family: var(--f-mono); font-size: 12px; }
 #lista-reportes small { display: block; color: var(--muted); }
 #reporte-form button[type="submit"] { justify-self: start; }
 
+/* Modelo */
+#modelo-desc { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.btn-pildora.prim { background: var(--accent); color: var(--accent-on); border-color: var(--accent); }
+.btn-pildora.prim:hover { background: color-mix(in srgb, var(--accent) 88%, var(--fg)); }
+.btn-pildora[disabled] { opacity: .5; cursor: default; pointer-events: none; }
+#modelo-avance { width: 100%; height: 6px; margin-top: 14px; accent-color: var(--accent); }
+#modelo-msg[data-tipo="error"], #modelo-problemas { color: var(--warn); }
+#modelo-msg[data-tipo="ok"] { color: var(--accent); }
+#modelo-msg:empty { display: none; }
+#modelo-problemas { font-size: 13px; line-height: 1.45; margin: 8px 0 0; padding-left: 20px; }
+#modelo-log-wrap { margin-top: 12px; font-size: 13px; color: var(--muted); }
+#modelo-log { max-height: 220px; overflow: auto; background: var(--hover); color: var(--fg); border-radius: 8px; padding: 8px 10px;
+  font: 400 11.5px/1.4 var(--f-mono); white-space: pre-wrap; word-break: break-word; }
+
 /* Mapa */
 .mapa-wrap { position: relative; min-width: 0; }
 #mapa { position: absolute; inset: 0; background: var(--suelo); }
@@ -275,6 +289,8 @@ code { font-family: var(--f-mono); font-size: 12px; }
         <button type="button" role="tab" id="tab-pol" data-tab="pol" aria-controls="panel-pol" aria-selected="false" tabindex="-1">Polígonos</button>
         <button type="button" role="tab" id="tab-cap" data-tab="cap" aria-controls="panel-cap" aria-selected="false" tabindex="-1">Capas</button>
         <button type="button" role="tab" id="tab-rep" data-tab="rep" aria-controls="panel-rep" aria-selected="false" tabindex="-1">Reportes</button>
+        <!-- Solo aparece cuando el sitio se abre desde web/servidor.py -->
+        <button type="button" role="tab" id="tab-mod" data-tab="mod" aria-controls="panel-mod" aria-selected="false" tabindex="-1" hidden>Modelo</button>
         <!-- Pestaña Datos (carga de CSV) oculta por ahora: quita "hidden" para mostrarla -->
         <button type="button" role="tab" id="tab-dat" data-tab="dat" aria-controls="panel-dat" aria-selected="false" tabindex="-1" hidden>Datos</button>
       </div>
@@ -331,6 +347,19 @@ code { font-family: var(--f-mono); font-size: 12px; }
         <h2><span>Reportes guardados <span id="reporte-total">0</span></span></h2>
         <div class="fila-btn"><button class="btn-pildora" id="descargar-reportes" type="button" disabled><span class="ms">download</span>Descargar CSV</button></div>
         <ul id="lista-reportes"></ul>
+      </section>
+
+      <section class="tabpanel pad" id="panel-mod" role="tabpanel" aria-labelledby="tab-mod" hidden>
+        <h2>Correr el modelo</h2>
+        <p id="modelo-desc">Ejecuta el notebook completo (compra, acomodo y mapa real) y vuelve a dibujar el sitio con el nuevo <code>mapa_siembra.gpkg</code>. Tarda varios minutos.</p>
+        <div class="fila-btn">
+          <button class="btn-pildora prim" id="modelo-correr" type="button"><span class="ms">play_arrow</span>Correr modelo</button>
+          <button class="btn-pildora" id="modelo-detener" type="button" hidden><span class="ms">stop</span>Detener</button>
+        </div>
+        <progress id="modelo-avance" max="1" value="0" hidden></progress>
+        <p class="nota" id="modelo-msg" aria-live="polite"></p>
+        <ul id="modelo-problemas" hidden></ul>
+        <details id="modelo-log-wrap" hidden><summary>Registro</summary><pre id="modelo-log"></pre></details>
       </section>
 
       <section class="tabpanel pad" id="panel-dat" role="tabpanel" aria-labelledby="tab-dat" hidden>

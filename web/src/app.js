@@ -761,6 +761,79 @@
     pintarLeyenda(); capaPlantas.redraw();
   });
 
+  // ---------- Correr el modelo (solo cuando el sitio se sirve con web/servidor.py) ----------
+  const API_MODELO = "api/modelo";
+  let vioCorrida = false, sondeo = null;
+  function duracion(seg) {
+    const m = Math.floor(seg / 60), s = Math.round(seg % 60);
+    return m ? `${m} min ${s} s` : `${s} s`;
+  }
+  function pintarModelo(st) {
+    const corriendo = st.estado === "corriendo", msg = $("#modelo-msg"), av = $("#modelo-avance");
+    $("#modelo-correr").disabled = corriendo;
+    $("#modelo-detener").hidden = !corriendo;
+    av.hidden = !corriendo;
+    if (st.total) { av.max = st.total; av.value = st.celda; } else av.removeAttribute("value");
+    if (corriendo) {
+      vioCorrida = true; $("#modelo-problemas").hidden = true;
+      msg.textContent = `${st.mensaje}${st.seccion ? " · " + st.seccion : ""} · ${duracion(st.ahora - st.inicio)}`;
+      msg.dataset.tipo = "";
+    } else if (st.estado === "inactivo") {
+      msg.textContent = "";
+    } else {
+      const cuando = st.fin ? ` · ${new Date(st.fin * 1000).toLocaleString("es-MX")} · ${duracion(st.fin - st.inicio)}` : "";
+      msg.textContent = st.mensaje + cuando;
+      msg.dataset.tipo = st.estado === "ok" ? "ok" : st.estado === "error" ? "error" : "";
+    }
+    const log = (st.log || []).join("\n");
+    $("#modelo-log-wrap").hidden = !log; $("#modelo-log").textContent = log;
+    // El sitio se regeneró: se recarga para leer el nuevo index.html (solo si la corrida se vio en esta página)
+    if (st.estado === "ok" && vioCorrida) { msg.textContent = "Listo. Recargando el mapa…"; setTimeout(() => location.reload(), 1200); }
+  }
+  async function consultarModelo() {
+    clearTimeout(sondeo);
+    try {
+      const r = await fetch(API_MODELO, { cache: "no-store" });
+      if (!r.ok) throw new Error(r.status);
+      const st = await r.json(); pintarModelo(st);
+      if (st.estado === "corriendo") sondeo = setTimeout(consultarModelo, 2000);
+      return st;
+    } catch (err) {
+      if (vioCorrida) {                                  // se perdió la conexión a media corrida: se reintenta
+        $("#modelo-msg").textContent = "Sin conexión con el servidor; reintentando…";
+        sondeo = setTimeout(consultarModelo, 5000);
+      }
+      throw err;
+    }
+  }
+  function mostrarProblemas(lista) {
+    const ul = $("#modelo-problemas"); ul.replaceChildren();
+    lista.forEach(p => { const li = document.createElement("li"); li.textContent = p; ul.append(li); });
+    ul.hidden = !lista.length;
+  }
+  $("#modelo-correr").addEventListener("click", async () => {
+    if (!confirm("Se correrá el modelo completo y el mapa se reemplazará con el resultado. Puede tardar varios minutos. ¿Continuar?")) return;
+    const msg = $("#modelo-msg"); mostrarProblemas([]);
+    $("#modelo-correr").disabled = true; msg.textContent = "Revisando datos y dependencias…"; msg.dataset.tipo = "";
+    try {
+      const r = await fetch(API_MODELO, { method: "POST" }), res = await r.json();
+      if (!r.ok) {
+        msg.textContent = res.error; msg.dataset.tipo = "error"; mostrarProblemas(res.problemas || []);
+        $("#modelo-correr").disabled = false; return;
+      }
+      vioCorrida = true; consultarModelo().catch(() => {});
+    } catch (err) {
+      msg.textContent = "No se pudo contactar al servidor."; msg.dataset.tipo = "error"; $("#modelo-correr").disabled = false;
+    }
+  });
+  $("#modelo-detener").addEventListener("click", async () => {
+    await fetch(API_MODELO + "/detener", { method: "POST" }).catch(() => {});
+    consultarModelo().catch(() => {});
+  });
+  if (location.protocol.startsWith("http")) {
+    consultarModelo().then(() => { $("#tab-mod").hidden = false; }).catch(() => {});
+  }
+
   // ---------- Arranque ----------
   if (window.PLANTAS_REALES) cargarPlantas(window.PLANTAS_REALES, "mapa_siembra.gpkg");
   else generarSimulada();

@@ -1,0 +1,11 @@
+numpy
+pandas
+scipy
+matplotlib
+geopandas
+shapely
+numba
+openpyxl
+nbclient
+nbformat
+ipykernel
