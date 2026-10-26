@@ -1,3 +1,4 @@
 web/artifact.html
 web/data/shapefile/mapa_siembra.anterior.gpkg
 __pycache__/
+.venv/
